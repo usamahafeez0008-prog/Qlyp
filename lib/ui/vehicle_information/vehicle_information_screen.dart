@@ -33,9 +33,9 @@ class VehicleInformationScreen extends StatelessWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                AppColors.qlypDeepPurple.withOpacity(0.98),
-                AppColors.qlypDark,
-                AppColors.qlypDark.withOpacity(0.95),
+                AppColors.qlypOffWhite.withOpacity(0.98),
+                AppColors.qlypCharcoal,
+                AppColors.qlypCharcoal.withOpacity(0.95),
               ],
               stops: const [0.0, 0.4, 1.0],
             ),
@@ -57,8 +57,8 @@ class VehicleInformationScreen extends StatelessWidget {
                       shape: BoxShape.circle,
                       gradient: RadialGradient(
                         colors: [
-                          AppColors.qlypMutedRose.withOpacity(0.25),
-                          AppColors.qlypMutedRose.withOpacity(0.10),
+                          AppColors.qlypDeepNavy.withOpacity(0.25),
+                          AppColors.qlypDeepNavy.withOpacity(0.10),
                           Colors.transparent,
                         ],
                       ),
@@ -75,8 +75,8 @@ class VehicleInformationScreen extends StatelessWidget {
                       shape: BoxShape.circle,
                       gradient: RadialGradient(
                         colors: [
-                          AppColors.qlypPrimaryLight.withOpacity(0.15),
-                          AppColors.qlypPrimaryLight.withOpacity(0.05),
+                          AppColors.qlypPrimaryFreshGreen.withOpacity(0.15),
+                          AppColors.qlypPrimaryFreshGreen.withOpacity(0.05),
                           Colors.transparent,
                         ],
                       ),
@@ -88,17 +88,17 @@ class VehicleInformationScreen extends StatelessWidget {
                 Positioned(
                   top: 150,
                   left: 30,
-                  child: _dot(AppColors.qlypSecondaryLight.withOpacity(0.40), 8),
+                  child: _dot(AppColors.qlypSecondaryWarmSand.withOpacity(0.40), 8),
                 ),
                 Positioned(
                   top: 280,
                   right: 40,
-                  child: _dot(AppColors.qlypPrimary.withOpacity(0.30), 6),
+                  child: _dot(AppColors.qlypPrimarySunYellow.withOpacity(0.30), 6),
                 ),
                 Positioned(
                   bottom: 200,
                   right: 60,
-                  child: _dot(AppColors.qlypMutedRose.withOpacity(0.30), 10),
+                  child: _dot(AppColors.qlypDeepNavy.withOpacity(0.30), 10),
                 ),
 
                 SafeArea(
@@ -117,14 +117,14 @@ class VehicleInformationScreen extends StatelessWidget {
                               height: 44,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(14),
-                                color: AppColors.qlypDark.withOpacity(0.35),
+                                color: AppColors.qlypCharcoal.withOpacity(0.35),
                                 border: Border.all(
-                                  color: AppColors.qlypPrimaryLight.withOpacity(0.10),
+                                  color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.10),
                                 ),
                               ),
                               child: Icon(
                                 Icons.directions_car_rounded,
-                                color: AppColors.qlypPrimaryLight.withOpacity(0.9),
+                                color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.9),
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -137,7 +137,7 @@ class VehicleInformationScreen extends StatelessWidget {
                                     style: GoogleFonts.poppins(
                                       fontSize: 20,
                                       fontWeight: FontWeight.w800,
-                                      color: AppColors.qlypPrimaryLight,
+                                      color: AppColors.qlypPrimaryFreshGreen,
                                       letterSpacing: -0.3,
                                     ),
                                   ),
@@ -147,7 +147,7 @@ class VehicleInformationScreen extends StatelessWidget {
                                     style: GoogleFonts.poppins(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w400,
-                                      color: AppColors.qlypPrimaryLight.withOpacity(0.7),
+                                      color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.7),
                                     ),
                                   ),
                                 ],
@@ -162,9 +162,9 @@ class VehicleInformationScreen extends StatelessWidget {
                         Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            color: AppColors.qlypDark.withOpacity(0.40),
+                            color: AppColors.qlypCharcoal.withOpacity(0.40),
                             border: Border.all(
-                              color: AppColors.qlypPrimaryLight.withOpacity(0.08),
+                              color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.08),
                               width: 1,
                             ),
                             boxShadow: [
@@ -174,7 +174,7 @@ class VehicleInformationScreen extends StatelessWidget {
                                 offset: const Offset(0, 20),
                               ),
                               BoxShadow(
-                                color: AppColors.qlypPrimaryLight.withOpacity(0.05),
+                                color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.05),
                                 blurRadius: 2,
                                 offset: const Offset(0, 1),
                               ),
@@ -192,7 +192,7 @@ class VehicleInformationScreen extends StatelessWidget {
                                     style: GoogleFonts.poppins(
                                       fontSize: 15,
                                       fontWeight: FontWeight.w600,
-                                      color: AppColors.qlypPrimaryLight.withOpacity(0.9),
+                                      color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.9),
                                       letterSpacing: -0.2,
                                     ),
                                   ),
@@ -225,20 +225,20 @@ class VehicleInformationScreen extends StatelessWidget {
 
                                                     // ✅ ONLY change selected color
                                                     color: isSelected
-                                                        ? AppColors.qlypSecondaryLight.withOpacity(0.18)
-                                                        : AppColors.qlypDark.withOpacity(0.55),
+                                                        ? AppColors.qlypSecondaryWarmSand.withOpacity(0.18)
+                                                        : AppColors.qlypCharcoal.withOpacity(0.55),
 
                                                     border: Border.all(
                                                       color: isSelected
-                                                          ? AppColors.qlypSecondaryLight
-                                                          : AppColors.qlypPrimaryLight.withOpacity(0.10),
+                                                          ? AppColors.qlypSecondaryWarmSand
+                                                          : AppColors.qlypPrimaryFreshGreen.withOpacity(0.10),
                                                       width: 1.4,
                                                     ),
 
                                                     boxShadow: isSelected
                                                         ? [
                                                       BoxShadow(
-                                                        color: AppColors.qlypSecondaryLight.withOpacity(0.35),
+                                                        color: AppColors.qlypSecondaryWarmSand.withOpacity(0.35),
                                                         blurRadius: 22,
                                                         offset: const Offset(0, 10),
                                                       ),
@@ -253,10 +253,10 @@ class VehicleInformationScreen extends StatelessWidget {
                                                       children: [
                                                         Container(
                                                           decoration: BoxDecoration(
-                                                            color: AppColors.qlypDark.withOpacity(0.65),
+                                                            color: AppColors.qlypCharcoal.withOpacity(0.65),
                                                             borderRadius: BorderRadius.circular(18),
                                                             border: Border.all(
-                                                              color: AppColors.qlypPrimaryLight.withOpacity(0.08),
+                                                              color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.08),
                                                             ),
                                                           ),
                                                           child: Padding(
@@ -283,8 +283,8 @@ class VehicleInformationScreen extends StatelessWidget {
                                                             fontSize: 12.5,
                                                             fontWeight: FontWeight.w600,
                                                             color: isSelected
-                                                                ? AppColors.qlypPrimaryLight
-                                                                : AppColors.qlypPrimaryLight.withOpacity(0.75),
+                                                                ? AppColors.qlypPrimaryFreshGreen
+                                                                : AppColors.qlypPrimaryFreshGreen.withOpacity(0.75),
                                                           ),
                                                         ),
                                                       ],
@@ -410,9 +410,9 @@ class VehicleInformationScreen extends StatelessWidget {
                                           () => Container(
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(16),
-                                          color: AppColors.qlypDark.withOpacity(0.35),
+                                          color: AppColors.qlypCharcoal.withOpacity(0.35),
                                           border: Border.all(
-                                            color: AppColors.qlypPrimaryLight.withOpacity(0.12),
+                                            color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.12),
                                             width: 1,
                                           ),
                                         ),
@@ -428,11 +428,11 @@ class VehicleInformationScreen extends StatelessWidget {
                                                   controller.selectedPrices[value].isAcNonAc == true ? 200 : 100;
                                                   controller.update();
                                                 },
-                                                indicatorColor: AppColors.qlypSecondaryLight,
+                                                indicatorColor: AppColors.qlypSecondaryWarmSand,
                                                 padding: const EdgeInsets.symmetric(horizontal: 8),
                                                 isScrollable: true,
-                                                labelColor: AppColors.qlypSecondaryLight,
-                                                unselectedLabelColor: AppColors.qlypPrimaryLight.withOpacity(0.55),
+                                                labelColor: AppColors.qlypSecondaryWarmSand,
+                                                unselectedLabelColor: AppColors.qlypPrimaryFreshGreen.withOpacity(0.55),
                                                 labelStyle: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600),
                                                 tabs: controller.selectedPrices.map((price) {
                                                   final zoneName = Constant.localizationName(
@@ -523,7 +523,7 @@ class VehicleInformationScreen extends StatelessWidget {
                                     style: GoogleFonts.poppins(
                                       fontWeight: FontWeight.w700,
                                       fontSize: 16,
-                                      color: AppColors.qlypPrimaryLight,
+                                      color: AppColors.qlypPrimaryFreshGreen,
                                     ),
                                   ),
                                   const SizedBox(height: 6),
@@ -534,8 +534,8 @@ class VehicleInformationScreen extends StatelessWidget {
                                           (item) => CheckboxListTile(
                                         contentPadding: EdgeInsets.zero,
                                         dense: true,
-                                        activeColor: AppColors.qlypSecondaryLight,
-                                        checkColor: AppColors.qlypDark,
+                                        activeColor: AppColors.qlypSecondaryWarmSand,
+                                        checkColor: AppColors.qlypCharcoal,
                                         value: controller.selectedDriverRulesList.indexWhere((e) => e.id == item.id) == -1
                                             ? false
                                             : true,
@@ -543,7 +543,7 @@ class VehicleInformationScreen extends StatelessWidget {
                                           Constant.localizationName(item.name),
                                           style: GoogleFonts.poppins(
                                             fontWeight: FontWeight.w400,
-                                            color: AppColors.qlypPrimaryLight.withOpacity(0.85),
+                                            color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.85),
                                           ),
                                         ),
                                         enabled: controller.driverModel.value.ownerId == null,
@@ -657,18 +657,18 @@ class VehicleInformationScreen extends StatelessWidget {
                                                 begin: Alignment.centerLeft,
                                                 end: Alignment.centerRight,
                                                 colors: [
-                                                  AppColors.qlypSecondaryLight,
-                                                  AppColors.qlypPrimary,
+                                                  AppColors.qlypSecondaryWarmSand,
+                                                  AppColors.qlypPrimarySunYellow,
                                                 ],
                                               ),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: AppColors.qlypPrimary.withOpacity(0.35),
+                                                  color: AppColors.qlypPrimarySunYellow.withOpacity(0.35),
                                                   blurRadius: 20,
                                                   offset: const Offset(0, 8),
                                                 ),
                                                 BoxShadow(
-                                                  color: AppColors.qlypSecondaryLight.withOpacity(0.25),
+                                                  color: AppColors.qlypSecondaryWarmSand.withOpacity(0.25),
                                                   blurRadius: 10,
                                                   offset: const Offset(0, 4),
                                                 ),
@@ -683,14 +683,14 @@ class VehicleInformationScreen extends StatelessWidget {
                                                     style: GoogleFonts.poppins(
                                                       fontSize: 16,
                                                       fontWeight: FontWeight.w800,
-                                                      color: AppColors.qlypDark,
+                                                      color: AppColors.qlypCharcoal,
                                                       letterSpacing: -0.2,
                                                     ),
                                                   ),
                                                   const SizedBox(width: 10),
                                                   Icon(
                                                     Icons.check_circle_rounded,
-                                                    color: AppColors.qlypDark,
+                                                    color: AppColors.qlypCharcoal,
                                                   ),
                                                 ],
                                               ),
@@ -705,7 +705,7 @@ class VehicleInformationScreen extends StatelessWidget {
                                       textAlign: TextAlign.center,
                                       style: GoogleFonts.poppins(
                                         fontSize: 12.5,
-                                        color: AppColors.qlypPrimaryLight.withOpacity(0.65),
+                                        color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.65),
                                       ),
                                     ),
                                   ],
@@ -743,7 +743,7 @@ class VehicleInformationScreen extends StatelessWidget {
     style: GoogleFonts.poppins(
       fontSize: 14,
       fontWeight: FontWeight.w600,
-      color: AppColors.qlypPrimaryLight.withOpacity(0.9),
+      color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.9),
       letterSpacing: -0.2,
     ),
   );
@@ -753,7 +753,7 @@ class VehicleInformationScreen extends StatelessWidget {
     style: GoogleFonts.poppins(
       fontSize: 13,
       fontWeight: FontWeight.w600,
-      color: AppColors.qlypPrimaryLight.withOpacity(0.85),
+      color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.85),
     ),
   );
 
@@ -771,10 +771,10 @@ class VehicleInformationScreen extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppColors.qlypPrimaryLight.withOpacity(0.15),
+          color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.15),
           width: 1.5,
         ),
-        color: AppColors.qlypDark.withOpacity(0.60),
+        color: AppColors.qlypCharcoal.withOpacity(0.60),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 14),
       child: Row(
@@ -785,14 +785,14 @@ class VehicleInformationScreen extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: AppColors.qlypPrimaryLight.withOpacity(0.85),
+                color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.85),
               ),
             ),
             const SizedBox(width: 10),
             Container(
               width: 1,
               height: 22,
-              color: AppColors.qlypPrimaryLight.withOpacity(0.12),
+              color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.12),
             ),
             const SizedBox(width: 12),
           ],
@@ -801,9 +801,9 @@ class VehicleInformationScreen extends StatelessWidget {
               controller: controller,
               enabled: enabled,
               keyboardType: keyboardType,
-              cursorColor: AppColors.qlypSecondaryLight,
+              cursorColor: AppColors.qlypSecondaryWarmSand,
               style: GoogleFonts.poppins(
-                color: AppColors.qlypPrimaryLight.withOpacity(0.95),
+                color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.95),
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),
@@ -811,7 +811,7 @@ class VehicleInformationScreen extends StatelessWidget {
                 border: InputBorder.none,
                 hintText: hint,
                 hintStyle: GoogleFonts.poppins(
-                  color: AppColors.qlypPrimaryLight.withOpacity(0.40),
+                  color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.40),
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
                 ),
@@ -822,7 +822,7 @@ class VehicleInformationScreen extends StatelessWidget {
             const SizedBox(width: 8),
             Icon(
               suffixIcon,
-              color: AppColors.qlypPrimaryLight.withOpacity(0.55),
+              color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.55),
               size: 20,
             ),
           ],
@@ -843,10 +843,10 @@ class VehicleInformationScreen extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppColors.qlypPrimaryLight.withOpacity(0.15),
+          color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.15),
           width: 1.5,
         ),
-        color: AppColors.qlypDark.withOpacity(0.60),
+        color: AppColors.qlypCharcoal.withOpacity(0.60),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 14),
       child: DropdownButtonFormField<T>(
@@ -854,20 +854,20 @@ class VehicleInformationScreen extends StatelessWidget {
         items: items,
         onChanged: onChanged,
         decoration: const InputDecoration(border: InputBorder.none),
-        dropdownColor: AppColors.qlypDark,
+        dropdownColor: AppColors.qlypCharcoal,
         icon: Icon(
           Icons.keyboard_arrow_down_rounded,
-          color: AppColors.qlypPrimaryLight.withOpacity(0.7),
+          color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.7),
         ),
         style: GoogleFonts.poppins(
-          color: AppColors.qlypPrimaryLight.withOpacity(0.95),
+          color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.95),
           fontSize: 14,
           fontWeight: FontWeight.w500,
         ),
         hint: Text(
           hint,
           style: GoogleFonts.poppins(
-            color: AppColors.qlypPrimaryLight.withOpacity(0.40),
+            color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.40),
             fontSize: 14,
             fontWeight: FontWeight.w400,
           ),
@@ -884,13 +884,13 @@ class VehicleInformationScreen extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: AppColors.qlypDark.withOpacity(0.98),
+          backgroundColor: AppColors.qlypCharcoal.withOpacity(0.98),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Text(
             'Zone list'.tr,
             style: GoogleFonts.poppins(
               fontWeight: FontWeight.w700,
-              color: AppColors.qlypPrimaryLight,
+              color: AppColors.qlypPrimaryFreshGreen,
             ),
           ),
           content: SizedBox(
@@ -905,8 +905,8 @@ class VehicleInformationScreen extends StatelessWidget {
                   return Obx(
                         () => CheckboxListTile(
                       contentPadding: EdgeInsets.zero,
-                      activeColor: AppColors.qlypSecondaryLight,
-                      checkColor: AppColors.qlypDark,
+                      activeColor: AppColors.qlypSecondaryWarmSand,
+                      checkColor: AppColors.qlypCharcoal,
                       value: controller.selectedTempZone.contains(controller.zoneList[index].id),
                       onChanged: (value) {
                         if (controller.selectedTempZone.contains(controller.zoneList[index].id)) {
@@ -918,7 +918,7 @@ class VehicleInformationScreen extends StatelessWidget {
                       title: Text(
                         Constant.localizationName(controller.zoneList[index].name),
                         style: GoogleFonts.poppins(
-                          color: AppColors.qlypPrimaryLight.withOpacity(0.85),
+                          color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.85),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -937,7 +937,7 @@ class VehicleInformationScreen extends StatelessWidget {
               child: Text(
                 "Cancel".tr,
                 style: GoogleFonts.poppins(
-                  color: AppColors.qlypPrimaryLight.withOpacity(0.75),
+                  color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.75),
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -986,7 +986,7 @@ class VehicleInformationScreen extends StatelessWidget {
               child: Text(
                 "Continue".tr,
                 style: GoogleFonts.poppins(
-                  color: AppColors.qlypSecondaryLight,
+                  color: AppColors.qlypSecondaryWarmSand,
                   fontWeight: FontWeight.w700,
                 ),
               ),

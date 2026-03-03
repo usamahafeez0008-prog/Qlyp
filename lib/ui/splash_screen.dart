@@ -82,7 +82,7 @@ class _SplashScreenState extends State<SplashScreen>
       init: SplashController(),
       builder: (_) {
         return Scaffold(
-          backgroundColor: AppColors.qlypDark,
+          backgroundColor: AppColors.qlypCharcoal,
           body: Stack(
             fit: StackFit.expand,
             children: [
@@ -388,8 +388,8 @@ class _QlypBackground extends StatelessWidget {
           center: const Alignment(0.0, -0.35),
           radius: 1.15,
           colors: [
-            AppColors.qlypDeepPurple.withOpacity(0.55),
-            AppColors.qlypDark.withOpacity(1.0),
+            AppColors.qlypDeepNavy.withOpacity(0.55),
+            AppColors.qlypDeepNavy.withOpacity(1.0),
           ],
           stops: const [0.0, 1.0],
         ),
@@ -442,13 +442,13 @@ class _ParticlesPainter extends CustomPainter {
           0.35 + 0.65 * (0.5 + 0.5 * sin((t * 2 * pi * s.speed) + s.phase));
 
       final paint = Paint()
-        ..color = AppColors.qlypPrimaryLight.withOpacity(0.12 * twinkle)
+        ..color = AppColors.qlypPrimaryFreshGreen.withOpacity(0.12 * twinkle)
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6);
 
       canvas.drawCircle(Offset(dx, dy), s.r, paint);
 
       final corePaint = Paint()
-        ..color = AppColors.qlypSecondaryLight.withOpacity(0.18 * twinkle);
+        ..color = AppColors.qlypSecondaryWarmSand.withOpacity(0.18 * twinkle);
 
       canvas.drawCircle(Offset(dx, dy), max(0.6, s.r * 0.45), corePaint);
     }

@@ -4,12 +4,12 @@ import 'package:get/get.dart';
 
 class ShowToastDialog {
   static void showToast(String? message) {
-    EasyLoading.instance.backgroundColor = Get.isDarkMode ? AppColors.qlypMutedRose : AppColors.qlypSecondaryLight;
+    EasyLoading.instance.backgroundColor = Get.isDarkMode ? AppColors.qlypDeepNavy : AppColors.qlypSecondaryWarmSand;
     EasyLoading.showToast(message!);
   }
 
   static void showLoader(String message) {
-    EasyLoading.instance.backgroundColor = Get.isDarkMode ? AppColors.qlypMutedRose : AppColors.qlypSecondaryLight;
+    EasyLoading.instance.backgroundColor = Get.isDarkMode ? AppColors.qlypDeepNavy : AppColors.qlypSecondaryWarmSand;
     EasyLoading.show(status: message);
   }
 

@@ -1,3 +1,4 @@
+import 'package:driver/themes/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -22,19 +23,19 @@ class _OnBoardingScreensState extends State<OnBoardingScreens> {
       "title": "Get Best Reviews",
       "description":
           "The feedback thus lets you improve if you need any, allowing you to do better in your work.",
-      "image": "assets/images/intro_1.png",
+      "image": "assets/images/intro_qlyp_1.png",
     },
     {
       "title": "Work Flexibility - Go Online Whenever You Want",
       "description":
           "Go Online and take up Rides whenever you feel like it. No complain!",
-      "image": "assets/images/intro_2.png",
+      "image": "assets/images/intro_qlyp_2.png",
     },
     {
       "title": "Make Easy Income",
       "description":
           "A smarter way to earn money at your convenience. Turn your spare time into earnings with this Driver app & keep track of your earnings.",
-      "image": "assets/images/intro_3.png",
+      "image": "assets/images/intro_qlyp_3.png",
     },
   ];
 
@@ -53,7 +54,7 @@ class _OnBoardingScreensState extends State<OnBoardingScreens> {
                 children: [
                   RichText(
                     text: TextSpan(
-                      text: "DRIVER ",
+                      text: "QLYP ",
                       style: GoogleFonts.poppins(
                         color: Colors.black,
                         fontWeight: FontWeight.w800,
@@ -61,9 +62,9 @@ class _OnBoardingScreensState extends State<OnBoardingScreens> {
                       ),
                       children: [
                         TextSpan(
-                          text: "APP",
+                          text: "Pilote",
                           style: GoogleFonts.poppins(
-                            color: const Color(0xffF2AB46),
+                            color: AppColors.qlypPrimaryFreshGreen,
                             fontWeight: FontWeight.w800,
                             fontSize: 18,
                           ),
@@ -78,7 +79,7 @@ class _OnBoardingScreensState extends State<OnBoardingScreens> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 6),
                         decoration: BoxDecoration(
-                          color: const Color(0xffF2AB46),
+                          color: AppColors.qlypPrimaryFreshGreen,
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Row(
@@ -103,7 +104,7 @@ class _OnBoardingScreensState extends State<OnBoardingScreens> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 6),
                         decoration: BoxDecoration(
-                          color: const Color(0xffF2AB46),
+                          color: AppColors.qlypPrimaryFreshGreen,
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Row(
@@ -156,31 +157,31 @@ class _OnBoardingScreensState extends State<OnBoardingScreens> {
                                   const Icon(Icons.broken_image,
                                       size: 100, color: Colors.grey),
                             ),
-                            Positioned(
-                              right: -10,
-                              top: 20,
-                              child: Container(
-                                padding: const EdgeInsets.all(16),
-                                decoration: const BoxDecoration(
-                                  color: Color(0xff333333),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      "Uber",
-                                      style: GoogleFonts.poppins(
-                                        color: Colors.white,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    const Icon(Icons.arrow_forward,
-                                        color: Colors.white, size: 16),
-                                  ],
-                                ),
-                              ),
-                            ),
+                            // Positioned(
+                            //   right: -10,
+                            //   top: 20,
+                            //   child: Container(
+                            //     padding: const EdgeInsets.all(16),
+                            //     decoration: const BoxDecoration(
+                            //       color: Color(0xff333333),
+                            //       shape: BoxShape.circle,
+                            //     ),
+                            //     child: Column(
+                            //       children: [
+                            //         Text(
+                            //           "Uber",
+                            //           style: GoogleFonts.poppins(
+                            //             color: Colors.white,
+                            //             fontSize: 14,
+                            //             fontWeight: FontWeight.w600,
+                            //           ),
+                            //         ),
+                            //         const Icon(Icons.arrow_forward,
+                            //             color: Colors.white, size: 16),
+                            //       ],
+                            //     ),
+                            //   ),
+                            // ),
                           ],
                         ),
                         const SizedBox(height: 50),
@@ -192,7 +193,7 @@ class _OnBoardingScreensState extends State<OnBoardingScreens> {
                           style: GoogleFonts.poppins(
                             fontSize: 22,
                             fontWeight: FontWeight.w700,
-                            color: const Color(0xff12223b),
+                            color: AppColors.qlypCharcoal,
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -200,10 +201,10 @@ class _OnBoardingScreensState extends State<OnBoardingScreens> {
                           _onboardingData[index]["description"]!,
                           textAlign: TextAlign.center,
                           style: GoogleFonts.poppins(
-                            fontSize: 16,
+                            fontSize: 14,
                             fontWeight: FontWeight.w400,
                             color: const Color(0xff838EA1),
-                            height: 1.5,
+                            height: 1.2,
                           ),
                         ),
                       ],
@@ -222,8 +223,7 @@ class _OnBoardingScreensState extends State<OnBoardingScreens> {
                   // Indicator Dashes
                   Row(
                     children: List.generate(
-                      _onboardingData.length +
-                          3, // Just to simulate the 6-dash look in screenshots if desired
+                      _onboardingData.length,
                       (index) {
                         int activeIdx = _currentIndex;
                         bool isActive = index == activeIdx;
@@ -233,7 +233,7 @@ class _OnBoardingScreensState extends State<OnBoardingScreens> {
                           width: 24,
                           decoration: BoxDecoration(
                             color: isActive
-                                ? const Color(0xffF2AB46)
+                                ? AppColors.qlypPrimaryFreshGreen
                                 : const Color(0xffE2E5EA),
                             borderRadius: BorderRadius.circular(2),
                           ),
@@ -246,7 +246,7 @@ class _OnBoardingScreensState extends State<OnBoardingScreens> {
                   InkWell(
                     onTap: () {
                       if (_currentIndex == _onboardingData.length - 1) {
-                        // Finish Onboarding
+                        // Change Here to "True" Finish Onboarding
                         Preferences.setBoolean(
                             Preferences.isFinishOnBoardingKey, true);
                         Get.offAll(() => const LoginScreen());
@@ -263,7 +263,7 @@ class _OnBoardingScreensState extends State<OnBoardingScreens> {
                       width: 50,
                       height: 50,
                       decoration: BoxDecoration(
-                        color: const Color(0xffF2AB46),
+                        color: AppColors.qlypPrimaryFreshGreen,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Center(

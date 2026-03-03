@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 
 class AppColors {
 
-  static const Color qlypPrimaryLight = Color(0xFFFAE5D8);
-    static const Color qlypSecondaryLight = Color(0xFFDFB6B2);
-  static const Color qlypMutedRose = Color(0xFF824D69);
-  static const Color qlypPrimary = Color(0xFF522959);
   static const Color qlypDeepPurple = Color(0xFF2A114B);
   static const Color qlypDark = Color(0xFF180018);
+
+  static const Color qlypPrimaryFreshGreen   = Color(0xFF25BA58);
+  static const Color qlypSecondaryWarmSand = Color(0xFFE0B787);
+  static const Color qlypDeepNavy      = Color(0xFF183350);
+  static const Color qlypPrimarySunYellow        = Color(0xFFFBC12B);
+  static const Color qlypOffWhite          = Color(0xFFEFF3F3);
+  static const Color qlypCharcoal           = Color(0xFF1E1E1E);
+  static const Color qlypMint           = Color(0xFF80D09F); // mint
+  static const Color qlypCoolGray       = Color(0xFFAAB6BA); // cool gray
+  static const Color qlypSlate          = Color(0xFF5F6E76); // slate
 
   static Color lightprimary = Color(0xff000000);
 

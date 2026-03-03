@@ -8,13 +8,12 @@ import 'package:driver/themes/app_colors.dart';
 import 'package:driver/themes/responsive.dart';
 import 'package:driver/utils/DarkThemeProvider.dart';
 import 'package:driver/utils/fire_store_utils.dart';
+import 'package:driver/ui/online_registration/registration_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-
-import 'home_screens/home_screen.dart';
 
 class DashBoardScreen extends StatelessWidget {
   const DashBoardScreen({super.key});
@@ -22,614 +21,408 @@ class DashBoardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
+    final bool isDark = themeChange.getThem();
 
     return GetX<DashBoardController>(
-      init: DashBoardController(),
-      builder: (controller) {
-        final bool isHome = controller.selectedDrawerIndex.value == 0;
-
-        return Scaffold(
-          // Drawer kept (hamburger disabled only on Home for demo)
-          drawer: buildAppDrawer(context, controller),
-          drawerEnableOpenDragGesture: false,
-          // For Home: No AppBar (we draw top bar over map)
-          // For other pages: keep old AppBar
-          appBar: isHome ? null : AppBar(
-            backgroundColor: AppColors.qlypDeepPurple,
-            centerTitle: true,
-            title: Text(
-              controller.drawerItems[controller.selectedDrawerIndex.value]
-                  .title
-                  .tr,
-              style: GoogleFonts.poppins(color: Colors.white),
-            ),
-            leading: Builder(
-              builder: (context) {
-                return InkWell(
-                  onTap: () => {} /*Scaffold.of(context).openDrawer()*/,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      left: 10,
-                      right: 20,
-                      top: 20,
-                      bottom: 20,
+        init: DashBoardController(),
+        builder: (controller) {
+          return Scaffold(
+            drawerEnableOpenDragGesture: false,
+            backgroundColor:
+                !isDark ? const Color(0xFF121212) : const Color(0xFFF8F9FB),
+            appBar: AppBar(
+              toolbarHeight: 70,
+              elevation: 0,
+              backgroundColor: AppColors.qlypPrimaryFreshGreen,
+              centerTitle: true,
+              leading: Builder(builder: (context) {
+                return Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: IconButton(
+                    onPressed: () =>
+                        Scaffold.of(context).openDrawer(),
+                    icon: SvgPicture.asset(
+                      'assets/icons/ic_humber.svg',
+                      color: Colors.white,
+                      width: 20,
                     ),
-                    child:
-                    SvgPicture.asset('assets/icons/ic_humber.svg'),
                   ),
                 );
-              },
-            ),
-          ),
-
-          body: WillPopScope(
-            onWillPop: controller.onWillPop,
-            child: isHome
-                ? Stack(
-              clipBehavior: Clip.none,
-              children: [
-                const Positioned.fill(child: HomeScreen()),
-
-                // TOP BAR (hamburger disabled)
-                SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(14, 10, 14, 0),
-                    child: Row(
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            // disabled for meeting
-                          },
-                          borderRadius: BorderRadius.circular(18),
-                          child: Container(
-                            width: 44,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              color: AppColors.qlypDark.withOpacity(0.65),
-                              borderRadius: BorderRadius.circular(18),
-                              border: Border.all(
-                                color: AppColors.qlypPrimaryLight.withOpacity(0.12),
-                              ),
-                            ),
-                            child: Icon(
-                              Icons.menu_rounded,
-                              color: AppColors.qlypPrimaryLight.withOpacity(0.9),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Container(
-                            height: 44,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: AppColors.qlypDark.withOpacity(0.55),
-                              borderRadius: BorderRadius.circular(22),
-                              border: Border.all(
-                                color: AppColors.qlypPrimaryLight.withOpacity(0.10),
-                              ),
-                            ),
-                            child: Text(
-                              "USD 0.00",
-                              style: GoogleFonts.poppins(
-                                fontSize: 13.5,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.qlypPrimaryLight.withOpacity(0.90),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: AppColors.qlypDark.withOpacity(0.65),
-                            borderRadius: BorderRadius.circular(18),
-                            border: Border.all(
-                              color: AppColors.qlypPrimaryLight.withOpacity(0.12),
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.my_location_rounded,
-                            size: 20,
-                            color: AppColors.qlypPrimaryLight.withOpacity(0.9),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // ✅ GO button (OUTSIDE bottom status stack - FIXED)
-                StreamBuilder(
-                  stream: FireStoreUtils.fireStore
-                      .collection(CollectionName.driverUsers)
-                      .doc(FireStoreUtils.getCurrentUid())
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData || snapshot.data?.data() == null) {
-                      return const SizedBox.shrink();
-                    }
-
-                    final driverModel =
-                    DriverUserModel.fromJson(snapshot.data!.data()!);
-                    final bool isOnline = driverModel.isOnline == true;
-
-                    Future<void> goOnline() async {
-                      ShowToastDialog.showLoader("Please wait".tr);
-
-                      if (driverModel.documentVerification == false &&
-                          Constant.isVerifyDocument == true) {
-                        ShowToastDialog.closeLoader();
-                        await _showAlertDialog(context, "document");
-                        return;
-                      } else if (driverModel.vehicleInformation == null ||
-                          driverModel.serviceId == null) {
-                        ShowToastDialog.closeLoader();
-                        await _showAlertDialog(context, "vehicleInformation");
-                        return;
-                      } else {
-                        driverModel.isOnline = true;
-                        await FireStoreUtils.updateDriverUser(driverModel);
-                        ShowToastDialog.closeLoader();
-                      }
-                    }
-
-                    // Show GO only when OFFLINE
-                    if (isOnline) return const SizedBox.shrink();
-
-                    return Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: 130, // ✅ above status bar
-                      child: Center(
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: goOnline,
-                            borderRadius: BorderRadius.circular(100),
-                            child: Ink(
-                              width: 59,
-                              height: 59,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.centerRight,
-                                  colors: [
-                                    AppColors.qlypMutedRose,
-                                    AppColors.qlypMutedRose,
-                                    AppColors.qlypMutedRose,
-                                  ],
-                                  stops: [0.0, 0.55, 1.0],
-                                ),
-                              ),
-
-                              /*    decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                gradient: const LinearGradient(
-                                  begin: Alignment.centerLeft,
-                                  end: Alignment.centerRight,
-                                  colors: [
-                                    AppColors.qlypPrimaryLight,
-                                    AppColors.qlypSecondaryLight,
-                                    AppColors.qlypMutedRose,
-                                  ],
-                                  stops: [0.0, 0.55, 1.0],
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color:
-                                    AppColors.qlypMutedRose.withOpacity(0.35),
-                                    blurRadius: 22,
-                                    offset: const Offset(0, 12),
-                                  ),
-                                ],
-                              ),*/
-                              child: Center(
-                                child: Text(
-                                  "Go".tr,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w800,
-                                    color: AppColors.qlypSecondaryLight,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-
-                // BOTTOM STATUS (tap to go offline when online)
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: StreamBuilder(
-                    stream: FireStoreUtils.fireStore
-                        .collection(CollectionName.driverUsers)
-                        .doc(FireStoreUtils.getCurrentUid())
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasError) return const SizedBox.shrink();
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 22),
-                          child: Constant.loader(
-                              isDarkTheme: themeChange.getThem()),
-                        );
-                      }
-                      if (!snapshot.hasData || snapshot.data?.data() == null) {
-                        return const SizedBox.shrink();
-                      }
-
-                      final driverModel =
-                      DriverUserModel.fromJson(snapshot.data!.data()!);
-                      final bool isOnline = driverModel.isOnline == true;
-
-                      Future<void> goOffline() async {
-                        ShowToastDialog.showLoader("Please wait".tr);
-                        driverModel.isOnline = false;
-                        await FireStoreUtils.updateDriverUser(driverModel);
-                        ShowToastDialog.closeLoader();
-                      }
-
-                      return SafeArea(
-                        top: false,
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
-                          child: GestureDetector(
-                            onTap: isOnline ? goOffline : null,
-                            child: Container(
-                              height: 62,
-                              width: double.infinity,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: AppColors.qlypDark.withOpacity(0.75),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Text(
-                                isOnline ? "You're online".tr : "You're offline".tr,
-                                style: GoogleFonts.poppins(
-                                  fontSize: 13.5,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.qlypPrimaryLight
-                                      .withOpacity(0.92),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            )
-                : controller.getDrawerItemWidget(controller.selectedDrawerIndex.value),
-          ),
-
-
-
-          /*body: WillPopScope(
-            onWillPop: controller.onWillPop,
-            child: isHome
-                ? Stack(
-              children: [
-                const Positioned.fill(child: HomeScreen()),
-
-                // TOP BAR (hamburger disabled)
-                SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(14, 10, 14, 0),
-                    child: Row(
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            // disabled for meeting
-                          },
-                          borderRadius: BorderRadius.circular(18),
-                          child: Container(
-                            width: 44,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              color: AppColors.qlypDark.withOpacity(0.65),
-                              borderRadius: BorderRadius.circular(18),
-                              border: Border.all(
-                                color: AppColors.qlypPrimaryLight.withOpacity(0.12),
-                              ),
-                            ),
-                            child: Icon(
-                              Icons.menu_rounded,
-                              color: AppColors.qlypPrimaryLight.withOpacity(0.9),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Container(
-                            height: 44,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: AppColors.qlypDark.withOpacity(0.55),
-                              borderRadius: BorderRadius.circular(22),
-                              border: Border.all(
-                                color: AppColors.qlypPrimaryLight.withOpacity(0.10),
-                              ),
-                            ),
-                            child: Text(
-                              "USD 0.00",
-                              style: GoogleFonts.poppins(
-                                fontSize: 13.5,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.qlypPrimaryLight.withOpacity(0.90),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: AppColors.qlypDark.withOpacity(0.65),
-                            borderRadius: BorderRadius.circular(18),
-                            border: Border.all(
-                              color: AppColors.qlypPrimaryLight.withOpacity(0.12),
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.my_location_rounded,
-                            size: 20,
-                            color: AppColors.qlypPrimaryLight.withOpacity(0.9),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // BOTTOM STATUS + GO (same old logic)
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: StreamBuilder(
-                    stream: FireStoreUtils.fireStore
-                        .collection(CollectionName.driverUsers)
-                        .doc(FireStoreUtils.getCurrentUid())
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasError) return const SizedBox.shrink();
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 22),
-                          child: Constant.loader(isDarkTheme: themeChange.getThem()),
-                        );
-                      }
-
-                      final driverModel =
-                      DriverUserModel.fromJson(snapshot.data!.data()!);
-                      final bool isOnline = driverModel.isOnline == true;
-
-                      Future<void> goOnline() async {
-                        ShowToastDialog.showLoader("Please wait".tr);
-
-                        if (driverModel.documentVerification == false &&
-                            Constant.isVerifyDocument == true) {
-                          ShowToastDialog.closeLoader();
-                          await _showAlertDialog(context, "document");
-                          return;
-                        } else if (driverModel.vehicleInformation == null ||
-                            driverModel.serviceId == null) {
-                          ShowToastDialog.closeLoader();
-                          await _showAlertDialog(context, "vehicleInformation");
-                          return;
-                        } else {
-                          driverModel.isOnline = true;
-                          await FireStoreUtils.updateDriverUser(driverModel);
-                          ShowToastDialog.closeLoader();
+              }),
+              title: controller.selectedDrawerIndex.value == 0
+                  ? StreamBuilder(
+                      stream: FireStoreUtils.fireStore
+                          .collection(CollectionName.driverUsers)
+                          .doc(FireStoreUtils.getCurrentUid())
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) return Text('Error'.tr);
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Constant.loader(isDarkTheme: isDark);
                         }
-                      }
 
-                      Future<void> goOffline() async {
-                        ShowToastDialog.showLoader("Please wait".tr);
-                        driverModel.isOnline = false;
-                        await FireStoreUtils.updateDriverUser(driverModel);
-                        ShowToastDialog.closeLoader();
-                      }
+                        DriverUserModel driverModel =
+                            DriverUserModel.fromJson(snapshot.data!.data()!);
 
-                      return SafeArea(
-                        top: false,
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
+                        // Custom Premium Toggle Button
+                        return Container(
+                          width: Responsive.width(52, context),
+                          height: 42,
+                          padding: const EdgeInsets.all(3),
+                          decoration: BoxDecoration(
+                            color: Colors.black26,
+                            borderRadius: BorderRadius.circular(25),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
                           child: Stack(
-                            alignment: Alignment.bottomCenter,
                             children: [
-                              GestureDetector(
-                                onTap: isOnline ? goOffline : null,
+                              // Sliding active background
+                              AnimatedAlign(
+                                alignment: Alignment(
+                                    driverModel.isOnline == true ? -1 : 1, 0),
+                                duration: const Duration(milliseconds: 350),
+                                curve: Curves.easeOutCubic,
                                 child: Container(
-                                  height: 62,
-                                  width: double.infinity,
-                                  alignment: Alignment.center,
+                                  width: Responsive.width(24.5, context),
+                                  height: 36,
                                   decoration: BoxDecoration(
-                                    color: AppColors.qlypDark.withOpacity(0.92),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Text(
-                                    isOnline
-                                        ? "You're online".tr
-                                        : "You're offline".tr,
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 13.5,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.qlypPrimaryLight
-                                          .withOpacity(0.92),
+                                    gradient: LinearGradient(
+                                      colors: driverModel.isOnline == true
+                                          ? [
+                                              AppColors.qlypPrimaryFreshGreen,
+                                              const Color(0xFF2A9D5B)
+                                            ]
+                                          : [
+                                              const Color(0xFFE5E5E5),
+                                              Colors.white
+                                            ],
                                     ),
+                                    borderRadius: BorderRadius.circular(20),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: driverModel.isOnline == true
+                                            ? AppColors.qlypPrimaryFreshGreen
+                                                .withOpacity(0.4)
+                                            : Colors.black12,
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
-                              if (!isOnline)
-                                Positioned(
-                                  bottom: 72,
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: InkWell(
-                                      onTap: goOnline,
-                                      borderRadius: BorderRadius.circular(100),
-                                      child: Ink(
-                                        width: 84,
-                                        height: 84,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          gradient: const LinearGradient(
-                                            begin: Alignment.centerLeft,
-                                            end: Alignment.centerRight,
-                                            colors: [
-                                              AppColors.qlypPrimaryLight,
-                                              AppColors.qlypSecondaryLight,
-                                              AppColors.qlypMutedRose,
-                                            ],
-                                            stops: [0.0, 0.55, 1.0],
-                                          ),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: AppColors.qlypMutedRose
-                                                  .withOpacity(0.35),
-                                              blurRadius: 22,
-                                              offset: const Offset(0, 12),
-                                            ),
-                                          ],
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            "Go".tr,
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w800,
-                                              color: AppColors.qlypDark,
-                                            ),
+                              // Interactive buttons
+                              Row(
+                                children: [
+                                  // Online Option
+                                  Expanded(
+                                    child: GestureDetector(
+                                      onTap: () async {
+                                        ShowToastDialog.showLoader(
+                                            "Please wait".tr);
+                                        if (driverModel.documentVerification ==
+                                            false) {
+                                          ShowToastDialog.closeLoader();
+                                          _showAlertDialog(context, "document");
+                                        } else if (driverModel
+                                                    .vehicleInformation ==
+                                                null ||
+                                            driverModel.serviceId == null) {
+                                          ShowToastDialog.closeLoader();
+                                          _showAlertDialog(
+                                              context, "vehicleInformation");
+                                        } else {
+                                          driverModel.isOnline = true;
+                                          await FireStoreUtils.updateDriverUser(
+                                              driverModel);
+                                          ShowToastDialog.closeLoader();
+                                        }
+                                      },
+                                      child: Container(
+                                        color: Colors.transparent,
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          'Online'.tr,
+                                          style: GoogleFonts.outfit(
+                                            color: driverModel.isOnline == true
+                                                ? Colors.white
+                                                : Colors.white60,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 13,
                                           ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
+                                  // Offline Option
+                                  Expanded(
+                                    child: GestureDetector(
+                                      onTap: () async {
+                                        ShowToastDialog.showLoader(
+                                            "Updating...".tr);
+                                        driverModel.isOnline = false;
+                                        await FireStoreUtils.updateDriverUser(
+                                            driverModel);
+                                        ShowToastDialog.closeLoader();
+                                      },
+                                      child: Container(
+                                        color: Colors.transparent,
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          'Offline'.tr,
+                                          style: GoogleFonts.outfit(
+                                            color: driverModel.isOnline == false
+                                                ? AppColors
+                                                    .qlypPrimaryFreshGreen
+                                                : Colors.white60,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            )
-                : controller.getDrawerItemWidget(controller.selectedDrawerIndex.value),
-          ),*/
-
-        );
-      },
-    );
+                        );
+                      })
+                  : Text(
+                      controller
+                          .drawerItems[controller.selectedDrawerIndex.value]
+                          .title
+                          .tr,
+                      style: GoogleFonts.outfit(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 19,
+                      ),
+                    ),
+            ),
+            drawer: buildAppDrawer(context, controller),
+            body: WillPopScope(
+              onWillPop: controller.onWillPop,
+              child: controller
+                  .getDrawerItemWidget(controller.selectedDrawerIndex.value),
+            ),
+          );
+        });
   }
 
-  // ✅ SAME alert dialog logic (unchanged)
   Future<void> _showAlertDialog(BuildContext context, String type) async {
     final controllerDashBoard = Get.put(DashBoardController());
+    final themeChange = Provider.of<DarkThemeProvider>(context, listen: false);
+    final bool isDark = themeChange.getThem();
+
     return showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Information'.tr),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white12
+                    : AppColors.qlypPrimaryFreshGreen.withOpacity(0.2),
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.info_outline_rounded,
+                    color: AppColors.qlypPrimaryFreshGreen,
+                    size: 32,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'Information'.tr,
+                  style: GoogleFonts.outfit(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 12),
                 Text(
                   'To start earning with QlYP you need to fill in your personal information'
                       .tr,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.outfit(
+                    fontSize: 15,
+                    color: isDark ? Colors.white70 : Colors.black54,
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 28),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Get.back(),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          side: BorderSide(
+                            color: isDark ? Colors.white38 : Colors.black26,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        child: Text(
+                          'No'.tr,
+                          style: GoogleFonts.outfit(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: isDark ? Colors.white70 : Colors.black54,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (type == "document") {
+                            Get.back(); // close dialog
+                            Get.to(() => const RegistrationScreen());
+                          } else {
+                            if (Constant.isVerifyDocument == true) {
+                              controllerDashBoard.onSelectItem(9);
+                            } else {
+                              controllerDashBoard.onSelectItem(8);
+                            }
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.qlypPrimaryFreshGreen,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        child: Text(
+                          'Yes'.tr,
+                          style: GoogleFonts.outfit(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('No'.tr),
-              onPressed: () => Get.back(),
-            ),
-            TextButton(
-              child: Text('Yes'.tr),
-              onPressed: () {
-                if (type == "document") {
-                  if (Constant.isVerifyDocument == true) {
-                    controllerDashBoard.onSelectItem(8);
-                  } else {
-                    controllerDashBoard.onSelectItem(7);
-                  }
-                } else {
-                  if (Constant.isVerifyDocument == true) {
-                    controllerDashBoard.onSelectItem(9);
-                  } else {
-                    controllerDashBoard.onSelectItem(8);
-                  }
-                }
-              },
-            ),
-          ],
         );
       },
     );
   }
 
-  // ✅ Drawer unchanged (same as your old code)
   Drawer buildAppDrawer(BuildContext context, DashBoardController controller) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
+    final bool isDark = themeChange.getThem();
 
     var drawerOptions = <Widget>[];
     for (var i = 0; i < controller.drawerItems.length; i++) {
       var d = controller.drawerItems[i];
+      bool isSelected = i == controller.selectedDrawerIndex.value;
+
       drawerOptions.add(
-        InkWell(
-          onTap: () {
-            controller.onSelectItem(i);
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          child: InkWell(
+            onTap: () => controller.onSelectItem(i),
+            borderRadius: BorderRadius.circular(16),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: i == controller.selectedDrawerIndex.value
-                    ? Theme.of(context).colorScheme.primary
+                color: isSelected
+                    ? AppColors.qlypPrimaryFreshGreen.withOpacity(0.12)
                     : Colors.transparent,
-                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                borderRadius: BorderRadius.circular(16),
+                border: isSelected
+                    ? Border.all(
+                        color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.1),
+                        width: 1)
+                    : null,
               ),
-              padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
-                  SvgPicture.asset(
-                    d.icon,
-                    width: 20,
-                    color: i == controller.selectedDrawerIndex.value
-                        ? themeChange.getThem()
-                        ? Colors.black
-                        : Colors.white
-                        : themeChange.getThem()
-                        ? Colors.white
-                        : AppColors.drawerIcon,
+                  // Icon with dynamic coloring
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? AppColors.qlypPrimaryFreshGreen
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: SvgPicture.asset(
+                      d.icon,
+                      width: 18,
+                      color: isSelected
+                          ? Colors.white
+                          : (isDark ? Colors.white54 : Colors.black45),
+                    ),
                   ),
-                  const SizedBox(width: 20),
+                  const SizedBox(width: 16),
+                  // Title
                   Text(
                     d.title.tr,
-                    style: GoogleFonts.poppins(
-                      color: i == controller.selectedDrawerIndex.value
-                          ? themeChange.getThem()
-                          ? Colors.black
-                          : Colors.white
-                          : themeChange.getThem()
-                          ? Colors.white
-                          : Colors.black,
-                      fontWeight: FontWeight.w500,
+                    style: GoogleFonts.outfit(
+                      color: isSelected
+                          ? AppColors.qlypPrimaryFreshGreen
+                          : (isDark ? Colors.white70 : Colors.black87),
+                      fontWeight:
+                          isSelected ? FontWeight.w700 : FontWeight.w500,
+                      fontSize: 15,
                     ),
-                  )
+                  ),
+                  const Spacer(),
+                  // Active indicator pill
+                  if (isSelected)
+                    Container(
+                      width: 4,
+                      height: 18,
+                      decoration: BoxDecoration(
+                        color: AppColors.qlypPrimaryFreshGreen,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -639,601 +432,168 @@ class DashBoardScreen extends StatelessWidget {
     }
 
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          DrawerHeader(
-            child: FutureBuilder<DriverUserModel?>(
-              future: FireStoreUtils.getDriverProfile(
-                FireStoreUtils.getCurrentUid(),
-              ),
-              builder: (context, snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.waiting:
-                    return Constant.loader(isDarkTheme: themeChange.getThem());
-                  case ConnectionState.done:
-                    if (snapshot.hasError) {
-                      return Text(snapshot.error.toString());
-                    } else {
-                      DriverUserModel driverModel = snapshot.data!;
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(60),
-                            child: CachedNetworkImage(
-                              height: Responsive.width(18, context),
-                              width: Responsive.width(18, context),
-                              imageUrl: driverModel.profilePic.toString(),
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) =>
-                                  Constant.loader(isDarkTheme: themeChange.getThem()),
-                              errorWidget: (context, url, error) =>
-                                  Image.network(Constant.userPlaceHolder),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 6),
-                            child: Text(
-                              driverModel.fullName.toString(),
-                              style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 2),
-                            child: Text(
-                              driverModel.email.toString(),
-                              style: GoogleFonts.poppins(),
-                            ),
-                          )
-                        ],
-                      );
-                    }
-                  default:
-                    return Text('Error'.tr);
-                }
-              },
-            ),
-          ),
-          Column(children: drawerOptions),
-        ],
+      backgroundColor: isDark ? const Color(0xFF1A1A1A) : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topRight: Radius.circular(35),
+          bottomRight: Radius.circular(35),
+        ),
       ),
-    );
-  }
-}
-
-class _HomeDemoLayout extends StatelessWidget {
-  final DarkThemeProvider themeChange;
-  final Future<void> Function(BuildContext, String) showAlertDialog;
-
-  const _HomeDemoLayout({
-    required this.themeChange,
-    required this.showAlertDialog,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        const Positioned.fill(
-          child: HomeScreen(),
-        ),
-
-        // ✅ TOP BAR (hamburger disabled for now)
-        SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(14, 10, 14, 0),
-            child: Row(
-              children: [
-                // Hamburger (disabled)
-                InkWell(
-                  onTap: () {
-                    // ✅ Disabled for 1st meeting (as requested)
-                    // Scaffold.of(context).openDrawer();
-                  },
-                  borderRadius: BorderRadius.circular(18),
-                  child: Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: AppColors.qlypDark.withOpacity(0.65),
-                      borderRadius: BorderRadius.circular(18),
-                      border: Border.all(
-                        color: AppColors.qlypPrimaryLight.withOpacity(0.12),
-                      ),
-                    ),
-                    child: Icon(
-                      Icons.menu_rounded,
-                      color: AppColors.qlypPrimaryLight.withOpacity(0.9),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(width: 12),
-
-                // USD badge (keep text untouched)
-                Expanded(
-                  child: Container(
-                    height: 44,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: AppColors.qlypDark.withOpacity(0.55),
-                      borderRadius: BorderRadius.circular(22),
-                      border: Border.all(
-                        color: AppColors.qlypPrimaryLight.withOpacity(0.10),
-                      ),
-                    ),
-                    child: Text(
-                      "USD 0.00",
-                      style: GoogleFonts.poppins(
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.qlypPrimaryLight.withOpacity(0.90),
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(width: 12),
-
-                // Location icon (no action for now)
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: AppColors.qlypDark.withOpacity(0.65),
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(
-                      color: AppColors.qlypPrimaryLight.withOpacity(0.12),
-                    ),
-                  ),
-                  child: Icon(
-                    Icons.my_location_rounded,
-                    size: 20,
-                    color: AppColors.qlypPrimaryLight.withOpacity(0.9),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-
-        // ✅ BOTTOM STATUS + GO button (old dashboard functionality)
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: StreamBuilder(
-            stream: FireStoreUtils.fireStore
-                .collection(CollectionName.driverUsers)
-                .doc(FireStoreUtils.getCurrentUid())
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.hasError) return const SizedBox.shrink();
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 22),
-                  child: Constant.loader(isDarkTheme: themeChange.getThem()),
-                );
-              }
-
-              final driverModel =
-              DriverUserModel.fromJson(snapshot.data!.data()!);
-              final bool isOnline = driverModel.isOnline == true;
-
-              // ✅ SAME OLD "ONLINE" logic (unchanged)
-              Future<void> goOnline() async {
-                ShowToastDialog.showLoader("Please wait".tr);
-
-                if (driverModel.documentVerification == false &&
-                    Constant.isVerifyDocument == true) {
-                  ShowToastDialog.closeLoader();
-                  await showAlertDialog(context, "document");
-                  return;
-                } else if (driverModel.vehicleInformation == null ||
-                    driverModel.serviceId == null) {
-                  ShowToastDialog.closeLoader();
-                  await showAlertDialog(context, "vehicleInformation");
-                  return;
-                } else {
-                  driverModel.isOnline = true;
-                  await FireStoreUtils.updateDriverUser(driverModel);
-                  ShowToastDialog.closeLoader();
-                }
-              }
-
-              // ✅ SAME OLD "OFFLINE" logic (unchanged)
-              Future<void> goOffline() async {
-                ShowToastDialog.showLoader("Please wait".tr);
-                driverModel.isOnline = false;
-                await FireStoreUtils.updateDriverUser(driverModel);
-                ShowToastDialog.closeLoader();
-              }
-
-              return SafeArea(
-                top: false,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
-                  child: Stack(
-                    alignment: Alignment.bottomCenter,
-                    children: [
-                      // Bottom status (covers any bottom bar behind it)
-                      GestureDetector(
-                        onTap: isOnline ? goOffline : null,
-                        child: Container(
-                          height: 62,
-                          width: double.infinity,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: AppColors.qlypDark.withOpacity(0.92),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            isOnline ? "You're online".tr : "You're offline".tr,
-                            style: GoogleFonts.poppins(
-                              fontSize: 13.5,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.qlypPrimaryLight.withOpacity(0.92),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      // GO button above status (only when offline)
-                      if (!isOnline)
-                        Positioned(
-                          bottom: 50,
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: goOnline,
-                              borderRadius: BorderRadius.circular(100),
-                              child: Ink(
-                                width: 84,
-                                height: 84,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  gradient: const LinearGradient(
-                                    begin: Alignment.centerLeft,
-                                    end: Alignment.centerRight,
-                                    colors: [
-                                      AppColors.qlypPrimaryLight,
-                                      AppColors.qlypSecondaryLight,
-                                      AppColors.qlypMutedRose,
-                                    ],
-                                    stops: [0.0, 0.55, 1.0],
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: AppColors.qlypMutedRose.withOpacity(0.35),
-                                      blurRadius: 22,
-                                      offset: const Offset(0, 12),
-                                    ),
-                                  ],
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    "Go".tr,
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w800,
-                                      color: AppColors.qlypDark,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-
-
-/*
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:driver/constant/collection_name.dart';
-import 'package:driver/constant/constant.dart';
-import 'package:driver/constant/show_toast_dialog.dart';
-import 'package:driver/controller/dash_board_controller.dart';
-import 'package:driver/model/driver_user_model.dart';
-import 'package:driver/themes/app_colors.dart';
-import 'package:driver/themes/responsive.dart';
-import 'package:driver/utils/DarkThemeProvider.dart';
-import 'package:driver/utils/fire_store_utils.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-
-class DashBoardScreen extends StatelessWidget {
-  const DashBoardScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final themeChange = Provider.of<DarkThemeProvider>(context);
-    return GetX<DashBoardController>(
-        init: DashBoardController(),
-        builder: (controller) {
-          return Scaffold(
-            appBar: AppBar(
-              backgroundColor: AppColors.lightprimary,
-              title: controller.selectedDrawerIndex.value == 0
-                  ? StreamBuilder(
-                      stream: FireStoreUtils.fireStore.collection(CollectionName.driverUsers).doc(FireStoreUtils.getCurrentUid()).snapshots(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasError) {
-                          return Text('Something went wrong'.tr);
-                        }
-
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return Constant.loader(isDarkTheme: themeChange.getThem());
-                        }
-
-                        DriverUserModel driverModel = DriverUserModel.fromJson(snapshot.data!.data()!);
-                        return Container(
-                          width: Responsive.width(50, context),
-                          height: Responsive.height(5.5, context),
-                          decoration: const BoxDecoration(
-                            color: AppColors.darkBackground,
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(50.0),
-                            ),
-                          ),
-                          child: Stack(
-                            children: [
-                              AnimatedAlign(
-                                alignment: Alignment(driverModel.isOnline == true ? -1 : 1, 0),
-                                duration: const Duration(milliseconds: 300),
-                                child: Container(
-                                  width: Responsive.width(26, context),
-                                  height: Responsive.height(8, context),
-                                  decoration: BoxDecoration(
-                                    color: themeChange.getThem() ? AppColors.darksecondprimary : AppColors.lightsecondprimary,
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(50.0),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () async {
-                                  ShowToastDialog.showLoader("Please wait");
-                                  if (driverModel.documentVerification == false && Constant.isVerifyDocument == true) {
-                                    ShowToastDialog.closeLoader();
-                                    _showAlertDialog(context, "document");
-                                  } else if (driverModel.vehicleInformation == null || driverModel.serviceId == null) {
-                                    ShowToastDialog.closeLoader();
-                                    _showAlertDialog(context, "vehicleInformation");
-                                  } else {
-                                    driverModel.isOnline = true;
-                                    await FireStoreUtils.updateDriverUser(driverModel);
-
-                                    ShowToastDialog.closeLoader();
-                                  }
-                                },
-                                child: Align(
-                                  alignment: const Alignment(-1, 0),
-                                  child: Container(
-                                    width: Responsive.width(26, context),
-                                    color: Colors.transparent,
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      'Online'.tr,
-                                      style: GoogleFonts.poppins(color: driverModel.isOnline == true ? Colors.black : Colors.white, fontWeight: FontWeight.w500, fontSize: 14),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () async {
-                                  ShowToastDialog.showLoader("Please wait".tr);
-                                  driverModel.isOnline = false;
-                                  await FireStoreUtils.updateDriverUser(driverModel);
-
-                                  ShowToastDialog.closeLoader();
-                                },
-                                child: Align(
-                                  alignment: const Alignment(1, 0),
-                                  child: Container(
-                                    width: Responsive.width(26, context),
-                                    color: Colors.transparent,
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      'Offline'.tr,
-                                      style: GoogleFonts.poppins(color: driverModel.isOnline == false ? Colors.black : Colors.white, fontWeight: FontWeight.w500, fontSize: 14),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      })
-                  : Text(
-                      controller.drawerItems[controller.selectedDrawerIndex.value].title.tr,
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                      ),
-                    ),
-              centerTitle: true,
-              leading: Builder(builder: (context) {
-                return InkWell(
-                  onTap: () {
-                    Scaffold.of(context).openDrawer();
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 10, right: 20, top: 20, bottom: 20),
-                    child: SvgPicture.asset('assets/icons/ic_humber.svg'),
-                  ),
-                );
-              }),
-            ),
-            drawer: buildAppDrawer(context, controller),
-            body: WillPopScope(onWillPop: controller.onWillPop, child: controller.getDrawerItemWidget(controller.selectedDrawerIndex.value)),
-          );
-        });
-  }
-
-  Future<void> _showAlertDialog(BuildContext context, String type) async {
-    final controllerDashBoard = Get.put(DashBoardController());
-
-    return showDialog(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          // <-- SEE HERE
-          title: Text('Information'.tr),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text('To start earning with QlYP you need to fill in your personal information'.tr),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('No'.tr),
-              onPressed: () {
-                Get.back();
-              },
-            ),
-            TextButton(
-              child: Text('Yes'.tr),
-              onPressed: () {
-                if (type == "document") {
-                  if (Constant.isVerifyDocument == true) {
-                    controllerDashBoard.onSelectItem(8);
-                  } else {
-                    controllerDashBoard.onSelectItem(7);
-                  }
-                } else {
-                  if (Constant.isVerifyDocument == true) {
-                    controllerDashBoard.onSelectItem(9);
-                  } else {
-                    controllerDashBoard.onSelectItem(8);
-                  }
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Drawer buildAppDrawer(BuildContext context, DashBoardController controller) {
-    final themeChange = Provider.of<DarkThemeProvider>(context);
-
-    var drawerOptions = <Widget>[];
-    for (var i = 0; i < controller.drawerItems.length; i++) {
-      var d = controller.drawerItems[i];
-      drawerOptions.add(InkWell(
-        onTap: () {
-          controller.onSelectItem(i);
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            decoration:
-                BoxDecoration(color: i == controller.selectedDrawerIndex.value ? Theme.of(context).colorScheme.primary : Colors.transparent, borderRadius: const BorderRadius.all(Radius.circular(10))),
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                SvgPicture.asset(
-                  d.icon,
-                  width: 20,
-                  color: i == controller.selectedDrawerIndex.value
-                      ? themeChange.getThem()
-                          ? Colors.black
-                          : Colors.white
-                      : themeChange.getThem()
-                          ? Colors.white
-                          : AppColors.drawerIcon,
-                ),
-                const SizedBox(
-                  width: 20,
-                ),
-                Text(
-                  d.title.tr,
-                  style: GoogleFonts.poppins(
-                      color: i == controller.selectedDrawerIndex.value
-                          ? themeChange.getThem()
-                              ? Colors.black
-                              : Colors.white
-                          : themeChange.getThem()
-                              ? Colors.white
-                              : Colors.black,
-                      fontWeight: FontWeight.w500),
-                )
-              ],
-            ),
-          ),
-        ),
-      ));
-    }
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
+      child: Column(
         children: [
-          DrawerHeader(
-            child: FutureBuilder<DriverUserModel?>(
-                future: FireStoreUtils.getDriverProfile(FireStoreUtils.getCurrentUid()),
-                builder: (context, snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                      return Constant.loader(isDarkTheme: themeChange.getThem());
-                    case ConnectionState.done:
-                      if (snapshot.hasError) {
-                        return Text(snapshot.error.toString());
-                      } else {
-                        DriverUserModel driverModel = snapshot.data!;
-                        return Column(
+          // ── Premium Header ──
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            decoration: BoxDecoration(
+              color: AppColors.qlypPrimaryFreshGreen,
+              borderRadius:
+                  const BorderRadius.only(topRight: Radius.circular(35)),
+            ),
+            child: Stack(
+              children: [
+                // Pattern background
+                Positioned.fill(
+                  child: ClipRRect(
+                    borderRadius:
+                        const BorderRadius.only(topRight: Radius.circular(35)),
+                    child: CustomPaint(
+                      painter: _DrawerHeaderPainter(isDark: isDark),
+                    ),
+                  ),
+                ),
+                // Profile Info
+                SafeArea(
+                  bottom: false,
+                  child: FutureBuilder<DriverUserModel?>(
+                    future: FireStoreUtils.getDriverProfile(
+                        FireStoreUtils.getCurrentUid()),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) return const SizedBox.shrink();
+                      DriverUserModel driverModel = snapshot.data!;
+                      return Padding(
+                        padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(60),
-                              child: CachedNetworkImage(
-                                height: Responsive.width(18, context),
-                                width: Responsive.width(18, context),
-                                imageUrl: driverModel.profilePic.toString(),
-                                fit: BoxFit.cover,
-                                placeholder: (context, url) => Constant.loader(isDarkTheme: themeChange.getThem()),
-                                errorWidget: (context, url, error) => Image.network(Constant.userPlaceHolder),
+                            // Profile Circle with Border
+                            Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border:
+                                    Border.all(color: Colors.white, width: 2),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(60),
+                                child: CachedNetworkImage(
+                                  height: 70,
+                                  width: 70,
+                                  imageUrl: driverModel.profilePic.toString(),
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) =>
+                                      Constant.loader(isDarkTheme: isDark),
+                                  errorWidget: (context, url, error) =>
+                                      Image.network(Constant.userPlaceHolder),
+                                ),
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 6),
-                              child: Text(driverModel.fullName.toString(), style: GoogleFonts.poppins(fontWeight: FontWeight.w500)),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 2),
-                              child: Text(
-                                driverModel.email.toString(),
-                                style: GoogleFonts.poppins(),
+                            const SizedBox(height: 12),
+                            Text(
+                              driverModel.fullName.toString(),
+                              style: GoogleFonts.outfit(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
                               ),
-                            )
+                            ),
+                            Text(
+                              driverModel.email.toString(),
+                              style: GoogleFonts.outfit(
+                                fontSize: 12,
+                                color: Colors.white.withOpacity(0.8),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ],
-                        );
-                      }
-                    default:
-                      return Text('Error'.tr);
-                  }
-                }),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
-          Column(children: drawerOptions),
+
+          // ── Menu Items ──
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              children: drawerOptions,
+            ),
+          ),
+
+          // ── Version App Info (Bottom) ──
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Text(
+              "App Version v5.5".tr,
+              style: GoogleFonts.outfit(
+                fontSize: 11,
+                color: isDark ? Colors.white24 : Colors.black26,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 }
-*/
+
+// ─── Custom Painters for Styling ──────────────────────────────────────────────
+
+class _DrawerHeaderPainter extends CustomPainter {
+  final bool isDark;
+  _DrawerHeaderPainter({required this.isDark});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+    final gradient = LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [
+        AppColors.qlypPrimaryFreshGreen,
+        AppColors.qlypPrimaryFreshGreen.withOpacity(0.85),
+      ],
+    ).createShader(rect);
+
+    final paint = Paint()..shader = gradient;
+    canvas.drawRect(rect, paint);
+
+    // Decorative Moroccan Lattice Dots
+    final dotPaint = Paint()..color = Colors.white.withOpacity(0.08);
+    const spacing = 20.0;
+    for (double i = 0; i < size.width; i += spacing) {
+      for (double j = 0; j < size.height; j += spacing) {
+        canvas.drawCircle(Offset(i, j), 1.2, dotPaint);
+      }
+    }
+
+    // Abstract Curves
+    final curvePath = Path()
+      ..moveTo(0, size.height)
+      ..quadraticBezierTo(
+          size.width * 0.45, size.height * 0.8, size.width, size.height)
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+
+    canvas.drawPath(curvePath,
+        Paint()..color = (isDark ? const Color(0xFF1A1A1A) : Colors.white));
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
+}

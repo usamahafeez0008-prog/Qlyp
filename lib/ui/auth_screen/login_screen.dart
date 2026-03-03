@@ -109,7 +109,7 @@ class LoginScreen extends StatelessWidget {
                             child: Theme(
                               data: Theme.of(context).copyWith(
                                 textSelectionTheme: TextSelectionThemeData(
-                                  cursorColor: AppColors.qlypSecondaryLight,
+                                  cursorColor: AppColors.qlypSecondaryWarmSand,
                                 ),
                               ),
                               child: CountryCodePicker(

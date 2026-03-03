@@ -25,7 +25,7 @@ void main() async {
     ..displayDuration = const Duration(seconds: 2)
     ..indicatorType = EasyLoadingIndicatorType.fadingCircle
     ..loadingStyle = EasyLoadingStyle.custom
-    ..backgroundColor = AppColors.qlypPrimaryLight
+    ..backgroundColor = AppColors.qlypPrimaryFreshGreen
     ..textColor = Colors.black
     ..indicatorColor = Colors.black
     ..maskColor = Colors.blue.withOpacity(0.5)
