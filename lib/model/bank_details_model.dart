@@ -3,8 +3,10 @@ class BankDetailsModel {
   String? bankName;
   String? holderName;
   String? branchName;
+  String? transitNumber;
   String? accountNumber;
   String? otherInformation;
+  String? payoutFrequency;
 
   BankDetailsModel(
       {this.userId,
@@ -12,7 +14,7 @@ class BankDetailsModel {
         this.holderName,
         this.branchName,
         this.accountNumber,
-        this.otherInformation});
+        this.otherInformation, this.payoutFrequency, this.transitNumber});
 
   BankDetailsModel.fromJson(Map<String, dynamic> json) {
     userId = json['userId'];
@@ -21,6 +23,8 @@ class BankDetailsModel {
     branchName = json['branchName'];
     accountNumber = json['accountNumber'];
     otherInformation = json['otherInformation'];
+    payoutFrequency = json['payoutFrequency'];
+    transitNumber = json['transitNumber'];
   }
 
   Map<String, dynamic> toJson() {
@@ -31,6 +35,8 @@ class BankDetailsModel {
     data['branchName'] = branchName;
     data['accountNumber'] = accountNumber;
     data['otherInformation'] = otherInformation;
+    data['payoutFrequency'] = payoutFrequency;
+    data['transitNumber'] = transitNumber;
     return data;
   }
 }

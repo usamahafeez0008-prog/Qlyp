@@ -8,9 +8,8 @@ class OnlineRegistrationController extends GetxController {
 
   @override
   void onInit() {
-    // TODO: implement onInit
     getDocument();
-    testFlow();
+   // testFlow();
     super.onInit();
   }
 

@@ -77,19 +77,26 @@ class DriverUserModel {
     serviceId = json['serviceId'];
     fcmToken = json['fcmToken'];
     email = json['email'];
-    vehicleInformation = json['vehicleInformation'] != null ? VehicleInformation.fromJson(json['vehicleInformation']) : null;
+    vehicleInformation = json['vehicleInformation'] != null
+        ? VehicleInformation.fromJson(json['vehicleInformation'])
+        : null;
     reviewsCount = json['reviewsCount'] ?? '0.0';
     reviewsSum = json['reviewsSum'] ?? '0.0';
     rotation = json['rotation'];
     walletAmount = json['walletAmount'] ?? "0.0";
-    location = json['location'] != null ? LocationLatLng.fromJson(json['location']) : null;
-    position = json['position'] != null ? Positions.fromJson(json['position']) : null;
+    location = json['location'] != null
+        ? LocationLatLng.fromJson(json['location'])
+        : null;
+    position =
+        json['position'] != null ? Positions.fromJson(json['position']) : null;
     createdAt = json['createdAt'];
     zoneIds = json['zoneIds'];
     subscriptionTotalOrders = json['subscriptionTotalOrders'];
     subscriptionPlanId = json['subscriptionPlanId'];
     subscriptionExpiryDate = json['subscriptionExpiryDate'];
-    subscriptionPlan = json['subscription_plan'] != null ? SubscriptionPlanModel.fromJson(json['subscription_plan']) : null;
+    subscriptionPlan = json['subscription_plan'] != null
+        ? SubscriptionPlanModel.fromJson(json['subscription_plan'])
+        : null;
     ownerId = json['ownerId'];
     if (json['serviceName'] != null) {
       serviceName = <LanguageName>[];
@@ -147,6 +154,18 @@ class VehicleInformation {
   String? seats;
   List<DriverRulesModel>? driverRules;
   List<RateModel>? rates;
+  String? vehicleYear;
+  String? carMake;
+  String? carModel;
+  String? carTrim;
+  String? carVin;
+  List<String>? vehiclePhotos;
+  String? vehicleTypeId;
+  String? vehicleTypeName;
+  String? mainServiceId;
+  String? mainServiceName;
+  String? serviceId;
+  String? serviceName;
 
   VehicleInformation({
     this.registrationDate,
@@ -155,6 +174,18 @@ class VehicleInformation {
     this.seats,
     this.driverRules,
     this.rates,
+    this.vehicleYear,
+    this.carMake,
+    this.carModel,
+    this.carTrim,
+    this.carVin,
+    this.vehiclePhotos,
+    this.vehicleTypeId,
+    this.vehicleTypeName,
+    this.mainServiceId,
+    this.mainServiceName,
+    this.serviceId,
+    this.serviceName,
   });
 
   VehicleInformation.fromJson(Map<String, dynamic> json) {
@@ -162,6 +193,22 @@ class VehicleInformation {
     vehicleColor = json['vehicleColor'];
     vehicleNumber = json['vehicleNumber'];
     seats = json['seats'];
+    vehicleYear = json['vehicleYear'];
+    carMake = json['carMake'];
+    carModel = json['carModel'];
+    carTrim = json['carTrim'];
+    carVin = json['carVin'];
+
+    if (json['vehiclePhotos'] != null) {
+      vehiclePhotos = json['vehiclePhotos'].cast<String>();
+    }
+    vehicleTypeId = json['vehicleTypeId'];
+    vehicleTypeName = json['vehicleTypeName'];
+    mainServiceId = json['mainServiceId'];
+    mainServiceName = json['mainServiceName'];
+    serviceId = json['serviceId'];
+    serviceName = json['serviceName'];
+
     if (json['driverRules'] != null) {
       driverRules = <DriverRulesModel>[];
       json['driverRules'].forEach((v) {
@@ -182,6 +229,19 @@ class VehicleInformation {
     data['vehicleColor'] = vehicleColor;
     data['vehicleNumber'] = vehicleNumber;
     data['seats'] = seats;
+    data['vehicleYear'] = vehicleYear;
+    data['carMake'] = carMake;
+    data['carModel'] = carModel;
+    data['carTrim'] = carTrim;
+    data['carVin'] = carVin;
+    data['vehiclePhotos'] = vehiclePhotos;
+    data['vehicleTypeId'] = vehicleTypeId;
+    data['vehicleTypeName'] = vehicleTypeName;
+    data['mainServiceId'] = mainServiceId;
+    data['mainServiceName'] = mainServiceName;
+    data['serviceId'] = serviceId;
+    data['serviceName'] = serviceName;
+
     if (driverRules != null) {
       data['driverRules'] = driverRules!.map((v) => v.toJson()).toList();
     }
@@ -198,7 +258,8 @@ class RateModel {
   String? perKmRate;
   String? zoneId;
 
-  RateModel({this.acPerKmRate, this.nonAcPerKmRate, this.perKmRate, this.zoneId});
+  RateModel(
+      {this.acPerKmRate, this.nonAcPerKmRate, this.perKmRate, this.zoneId});
 
   RateModel.fromJson(Map<String, dynamic> json) {
     acPerKmRate = json['acPerKmRate'];

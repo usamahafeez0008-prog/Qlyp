@@ -1,11 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:driver/constant/collection_name.dart';
 import 'package:driver/constant/constant.dart';
-import 'package:driver/constant/show_toast_dialog.dart';
 import 'package:driver/controller/dash_board_controller.dart';
 import 'package:driver/model/driver_user_model.dart';
 import 'package:driver/themes/app_colors.dart';
-import 'package:driver/themes/responsive.dart';
 import 'package:driver/utils/DarkThemeProvider.dart';
 import 'package:driver/utils/fire_store_utils.dart';
 import 'package:driver/ui/online_registration/registration_screen.dart';
@@ -26,10 +24,12 @@ class DashBoardScreen extends StatelessWidget {
     return GetX<DashBoardController>(
         init: DashBoardController(),
         builder: (controller) {
+          /*
+          // Old UI commented out as requested
           return Scaffold(
             drawerEnableOpenDragGesture: false,
             backgroundColor:
-                !isDark ? const Color(0xFF121212) : const Color(0xFFF8F9FB),
+                isDark ? const Color(0xFF121212) : const Color(0xFFF8F9FB),
             appBar: AppBar(
               toolbarHeight: 70,
               elevation: 0,
@@ -212,6 +212,236 @@ class DashBoardScreen extends StatelessWidget {
               onWillPop: controller.onWillPop,
               child: controller
                   .getDrawerItemWidget(controller.selectedDrawerIndex.value),
+            ),
+          );
+          */
+
+          return Scaffold(
+            backgroundColor: AppColors.qlypDeepNavy,
+            drawer: buildAppDrawer(context, controller),
+            bottomNavigationBar: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, -5),
+                  ),
+                ],
+              ),
+              child: BottomNavigationBar(
+                currentIndex: controller.getSelectedBottomNavIndex() == -1
+                    ? 0
+                    : controller.getSelectedBottomNavIndex(),
+                onTap: (index) => controller.onBottomNavTapped(index),
+                type: BottomNavigationBarType.fixed,
+                backgroundColor: Colors.white,
+                selectedItemColor: AppColors.qlypPrimaryFreshGreen,
+                unselectedItemColor: Colors.black38,
+                selectedLabelStyle: GoogleFonts.outfit(
+                    fontWeight: FontWeight.bold, fontSize: 12),
+                unselectedLabelStyle: GoogleFonts.outfit(fontSize: 12),
+                items: [
+                  BottomNavigationBarItem(
+                      icon: const Icon(Icons.grid_view_rounded),
+                      label: "HOME".tr),
+                  BottomNavigationBarItem(
+                      icon: const Icon(Icons.account_balance_wallet_outlined),
+                      label: "EARNINGS".tr),
+                  BottomNavigationBarItem(
+                      icon: const Icon(Icons.person_outline_rounded),
+                      label: "PROFILE".tr),
+                  BottomNavigationBarItem(
+                      icon: const Icon(Icons.headset_mic_outlined),
+                      label: "SUPPORT".tr),
+                ],
+              ),
+            ),
+            body: WillPopScope(
+              onWillPop: controller.onWillPop,
+              child: Column(
+                children: [
+                  // Premium Navy Header
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.only(
+                        top: 50, left: 24, right: 24, bottom: 30),
+                    child: StreamBuilder(
+                        stream: FireStoreUtils.fireStore
+                            .collection(CollectionName.driverUsers)
+                            .doc(FireStoreUtils.getCurrentUid())
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) return const SizedBox.shrink();
+                          DriverUserModel driverModel =
+                              DriverUserModel.fromJson(snapshot.data!.data()!);
+
+                          return Row(
+                            children: [
+                              // Profile Pic leading to Drawer
+                              Builder(builder: (context) {
+                                return GestureDetector(
+                                  onTap: () =>
+                                      Scaffold.of(context).openDrawer(),
+                                  child: Stack(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(4),
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.black.withOpacity(0.2),
+                                              blurRadius: 20,
+                                            )
+                                          ],
+                                          border: Border.all(
+                                              color: AppColors
+                                                  .qlypPrimaryFreshGreen,
+                                              width: 2),
+                                        ),
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          child: CachedNetworkImage(
+                                            height: 54,
+                                            width: 54,
+                                            imageUrl: driverModel.profilePic
+                                                .toString(),
+                                            fit: BoxFit.cover,
+                                            placeholder: (context, url) =>
+                                                const CircularProgressIndicator(
+                                                    color: Colors.white),
+                                            errorWidget: (context, url,
+                                                    error) =>
+                                                Image.network(
+                                                    Constant.userPlaceHolder),
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        right: 2,
+                                        bottom: 2,
+                                        child: Container(
+                                          width: 14,
+                                          height: 14,
+                                          decoration: BoxDecoration(
+                                            color: driverModel.isOnline == true
+                                                ? AppColors
+                                                    .qlypPrimaryFreshGreen
+                                                : Colors.grey,
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                                color: AppColors.qlypDeepNavy,
+                                                width: 2.5),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "WELCOME BACK".tr,
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white60,
+                                        letterSpacing: 0.8,
+                                      ),
+                                    ),
+                                    Text(
+                                      driverModel.fullName.toString(),
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              // Online Toggle
+                              Column(
+                                children: [
+                                  Switch(
+                                    value: driverModel.isOnline ?? false,
+                                    onChanged: (val) async {
+                                      if (val) {
+                                        if (driverModel.documentVerification ==
+                                            false) {
+                                          _showAlertDialog(context, "document");
+                                        } else if (driverModel
+                                                    .vehicleInformation ==
+                                                null ||
+                                            driverModel.serviceId == null) {
+                                          _showAlertDialog(
+                                              context, "vehicleInformation");
+                                        } else {
+                                          driverModel.isOnline = true;
+                                          await FireStoreUtils.updateDriverUser(
+                                              driverModel);
+                                        }
+                                      } else {
+                                        driverModel.isOnline = false;
+                                        await FireStoreUtils.updateDriverUser(
+                                            driverModel);
+                                      }
+                                    },
+                                    activeColor: Colors.white,
+                                    activeTrackColor:
+                                        AppColors.qlypPrimaryFreshGreen,
+                                  ),
+                                  Text(
+                                    (driverModel.isOnline ?? false)
+                                        ? "ONLINE".tr
+                                        : "OFFLINE".tr,
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: (driverModel.isOnline ?? false)
+                                          ? AppColors.qlypPrimaryFreshGreen
+                                          : Colors.white38,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          );
+                        }),
+                  ),
+                  // Body content in white container with rounded corners
+                  Expanded(
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? const Color(0xFF121212)
+                            : const Color(0xFFF8F9FB),
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(35),
+                          topRight: Radius.circular(35),
+                        ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(35),
+                          topRight: Radius.circular(35),
+                        ),
+                        child: controller.getDrawerItemWidget(
+                            controller.selectedDrawerIndex.value),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         });

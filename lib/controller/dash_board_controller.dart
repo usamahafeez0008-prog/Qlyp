@@ -273,6 +273,31 @@ class DashBoardController extends GetxController {
 
   RxInt selectedDrawerIndex = 0.obs;
 
+  int getIndexByTitle(String title) {
+    return drawerItems.indexWhere((element) => element.title == title);
+  }
+
+  void onBottomNavTapped(int index) {
+    int drawerIndex = -1;
+    if (index == 0) drawerIndex = getIndexByTitle('City');
+    if (index == 1) drawerIndex = getIndexByTitle('My Wallet');
+    if (index == 2) drawerIndex = getIndexByTitle('Profile');
+    if (index == 3) drawerIndex = getIndexByTitle('Help & Support');
+
+    if (drawerIndex != -1) {
+      selectedDrawerIndex.value = drawerIndex;
+    }
+  }
+
+  int getSelectedBottomNavIndex() {
+    int current = selectedDrawerIndex.value;
+    if (current == getIndexByTitle('City')) return 0;
+    if (current == getIndexByTitle('My Wallet')) return 1;
+    if (current == getIndexByTitle('Profile')) return 2;
+    if (current == getIndexByTitle('Help & Support')) return 3;
+    return -1;
+  }
+
   @override
   void onInit() {
     // TODO: implement onInit

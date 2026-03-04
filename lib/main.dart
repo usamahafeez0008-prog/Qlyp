@@ -26,8 +26,8 @@ void main() async {
     ..indicatorType = EasyLoadingIndicatorType.fadingCircle
     ..loadingStyle = EasyLoadingStyle.custom
     ..backgroundColor = AppColors.qlypPrimaryFreshGreen
-    ..textColor = Colors.black
-    ..indicatorColor = Colors.black
+    ..textColor = Colors.white
+    ..indicatorColor = Colors.white
     ..maskColor = Colors.blue.withOpacity(0.5)
     ..userInteractions = false
     ..dismissOnTap = false;
@@ -57,7 +57,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 
   void getCurrentAppTheme() async {
-    themeChangeProvider.darkTheme = await themeChangeProvider.darkThemePreference.getTheme();
+    themeChangeProvider.darkTheme =
+        await themeChangeProvider.darkThemePreference.getTheme();
   }
 
   @override
@@ -72,10 +73,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           debugShowCheckedModeBanner: false,
           theme: Styles.themeData(
               themeChangeProvider.darkTheme == 0
-                  ? true
+                  ? false // Default to false (Light) if 0
                   : themeChangeProvider.darkTheme == 1
-                      ? false
-                      : true,
+                      ? false // Light
+                      : true, // Dark
               context),
           localizationsDelegates: const [
             CountryLocalizations.delegate,

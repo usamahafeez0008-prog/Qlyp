@@ -3,6 +3,7 @@ import 'package:driver/controller/online_registration_controller.dart';
 import 'package:driver/model/document_model.dart';
 import 'package:driver/model/driver_document_model.dart';
 import 'package:driver/ui/online_registration/widgets/upload_document_widget.dart';
+import 'package:driver/ui/vehicle_information/vehicle_information_screen.dart';
 import 'package:driver/utils/DarkThemeProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,8 +13,9 @@ import 'package:google_fonts/google_fonts.dart';
 class RegistrationScreen extends StatelessWidget {
   const RegistrationScreen({super.key});
 
-  void _showUploadPopup(BuildContext context, DocumentModel documentModel) {
-    showModalBottomSheet(
+  void _showUploadPopup(BuildContext context, DocumentModel documentModel,
+      OnlineRegistrationController controller) async {
+    await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -30,6 +32,8 @@ class RegistrationScreen extends StatelessWidget {
         ),
       ),
     );
+    // Refresh the registration screen after upload
+    controller.getDocument();
   }
 
   @override
@@ -129,7 +133,7 @@ class RegistrationScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 10),
                                 Text(
-                                  "To start driving in Quebec, we need a few legal documents for verification.",
+                                  "To start driving in QLYP, we need a few legal documents for verification.",
                                   style: GoogleFonts.poppins(
                                     fontSize: 14,
                                     color: const Color(0xff838EA1),
@@ -174,6 +178,7 @@ class RegistrationScreen extends StatelessWidget {
                                       documentModel: documentModel,
                                       isUploaded: isUploaded,
                                       lowerTitle: lowerTitle,
+                                      controller: controller,
                                     );
                                   },
                                 ),
@@ -245,7 +250,8 @@ class RegistrationScreen extends StatelessWidget {
                                 Expanded(
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      Get.back();
+                                      Get.to(() =>
+                                          const VehicleInformationScreen());
                                     },
                                     style: ElevatedButton.styleFrom(
                                       padding: const EdgeInsets.symmetric(
@@ -283,6 +289,7 @@ class RegistrationScreen extends StatelessWidget {
     required DocumentModel documentModel,
     required bool isUploaded,
     required String lowerTitle,
+    required OnlineRegistrationController controller,
   }) {
     IconData icon = Icons.description;
     if (lowerTitle.contains('license') || lowerTitle.contains('permis')) {
@@ -414,7 +421,7 @@ class RegistrationScreen extends StatelessWidget {
                   const Spacer(),
                   InkWell(
                     onTap: () {
-                      _showUploadPopup(context, documentModel);
+                      _showUploadPopup(context, documentModel, controller);
                     },
                     child: Text(
                       "Edit",
@@ -432,7 +439,7 @@ class RegistrationScreen extends StatelessWidget {
               lowerTitle.contains('assurance'))
             InkWell(
               onTap: () {
-                _showUploadPopup(context, documentModel);
+                _showUploadPopup(context, documentModel, controller);
               },
               child: Container(
                 width: double.infinity,
@@ -474,7 +481,7 @@ class RegistrationScreen extends StatelessWidget {
               height: 48,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  _showUploadPopup(context, documentModel);
+                  _showUploadPopup(context, documentModel, controller);
                 },
                 icon: const Icon(Icons.camera_alt_outlined,
                     color: Colors.black, size: 20),
@@ -502,7 +509,7 @@ class RegistrationScreen extends StatelessWidget {
               height: 48,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  _showUploadPopup(context, documentModel);
+                  _showUploadPopup(context, documentModel, controller);
                 },
                 icon: const Icon(Icons.upload_file,
                     color: Colors.black, size: 20),

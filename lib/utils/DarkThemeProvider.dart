@@ -16,16 +16,17 @@ class DarkThemeProvider with ChangeNotifier {
 
   bool getThem() {
     if (_darkTheme == 0) {
-      return true;
+      return false; // Light by default
     } else if (_darkTheme == 1) {
-      return false;
+      return false; // Light
     } else {
-      return true;
+      return true; // Dark
     }
   }
 
   bool getSystemThem() {
-    var brightness = SchedulerBinding.instance.platformDispatcher.platformBrightness;
+    var brightness =
+        SchedulerBinding.instance.platformDispatcher.platformBrightness;
     return brightness == Brightness.dark;
   }
 }

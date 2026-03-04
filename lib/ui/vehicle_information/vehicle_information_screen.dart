@@ -4,1001 +4,1828 @@ import 'package:driver/constant/show_toast_dialog.dart';
 import 'package:driver/controller/vehicle_information_controller.dart';
 import 'package:driver/model/service_model.dart';
 import 'package:driver/model/zone_model.dart';
+import 'package:driver/model/main_service_model.dart';
+import 'package:driver/model/vehicle_type_model.dart';
 import 'package:driver/themes/app_colors.dart';
 import 'package:driver/themes/responsive.dart';
 import 'package:driver/utils/DarkThemeProvider.dart';
-import 'package:driver/utils/fire_store_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+// --------------------- NEW UI FROM SCREENSHOT ---------------------
 class VehicleInformationScreen extends StatelessWidget {
   const VehicleInformationScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final themeChange = Provider.of<DarkThemeProvider>(context);
-
     return GetX<VehicleInformationController>(
       init: VehicleInformationController(),
       builder: (controller) {
-        final isDark = themeChange.getThem();
-
-        return Container(
-          // ✅ QLYP-style gradient background (same vibe as Login UI)
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                AppColors.qlypOffWhite.withOpacity(0.98),
-                AppColors.qlypCharcoal,
-                AppColors.qlypCharcoal.withOpacity(0.95),
-              ],
-              stops: const [0.0, 0.4, 1.0],
+        return Scaffold(
+          backgroundColor: const Color(0xffF9F9F9),
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            centerTitle: true,
+            title: Text(
+              'Vehicle Registration',
+              style: GoogleFonts.poppins(
+                color: Colors.black,
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
+            ),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back_ios,
+                  color: Colors.black, size: 20),
+              onPressed: () => Get.back(),
             ),
           ),
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            extendBody: true,
-            drawerEnableOpenDragGesture: false,
-            body: Stack(
-              children: [
-                // ✅ background blobs
-                Positioned(
-                  top: -100,
-                  right: -50,
-                  child: Container(
-                    width: 300,
-                    height: 300,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: RadialGradient(
-                        colors: [
-                          AppColors.qlypDeepNavy.withOpacity(0.25),
-                          AppColors.qlypDeepNavy.withOpacity(0.10),
-                          Colors.transparent,
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: -110,
-                  left: -60,
-                  child: Container(
-                    width: 260,
-                    height: 260,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: RadialGradient(
-                        colors: [
-                          AppColors.qlypPrimaryFreshGreen.withOpacity(0.15),
-                          AppColors.qlypPrimaryFreshGreen.withOpacity(0.05),
-                          Colors.transparent,
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-
-                // ✅ floating particles
-                Positioned(
-                  top: 150,
-                  left: 30,
-                  child: _dot(AppColors.qlypSecondaryWarmSand.withOpacity(0.40), 8),
-                ),
-                Positioned(
-                  top: 280,
-                  right: 40,
-                  child: _dot(AppColors.qlypPrimarySunYellow.withOpacity(0.30), 6),
-                ),
-                Positioned(
-                  bottom: 200,
-                  right: 60,
-                  child: _dot(AppColors.qlypDeepNavy.withOpacity(0.30), 10),
-                ),
-
-                SafeArea(
-                  child: controller.isLoading.value
-                      ? Constant.loader(isDarkTheme: isDark)
-                      : SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // ✅ header (replaces old empty spacer)
-                        Row(
-                          children: [
-                            Container(
-                              width: 44,
-                              height: 44,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(14),
-                                color: AppColors.qlypCharcoal.withOpacity(0.35),
-                                border: Border.all(
-                                  color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.10),
-                                ),
-                              ),
-                              child: Icon(
-                                Icons.directions_car_rounded,
-                                color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.9),
-                              ),
+          body: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // --- Header Progress ---
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'STEP 2 OF 3',
+                            style: GoogleFonts.poppins(
+                              color: const Color(0xff838EA1),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 10,
+                              letterSpacing: 1.2,
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Vehicle Information".tr,
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w800,
-                                      color: AppColors.qlypPrimaryFreshGreen,
-                                      letterSpacing: -0.3,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 3),
-                                  Text(
-                                    "Complete details to start taking rides".tr,
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w400,
-                                      color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.7),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 18),
-
-                        // ✅ glass card container (same look as login card)
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: AppColors.qlypCharcoal.withOpacity(0.40),
-                            border: Border.all(
-                              color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.08),
-                              width: 1,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.30),
-                                blurRadius: 40,
-                                offset: const Offset(0, 20),
-                              ),
-                              BoxShadow(
-                                color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.05),
-                                blurRadius: 2,
-                                offset: const Offset(0, 1),
-                              ),
-                            ],
                           ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(28),
-                            child: Padding(
-                              padding: const EdgeInsets.all(18),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Service Type".tr,
+                          Text(
+                            '40%',
+                            style: GoogleFonts.poppins(
+                              color: AppColors.qlypPrimaryFreshGreen,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Onboarding',
+                        style: GoogleFonts.poppins(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 24,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      // Progress bar
+                      Container(
+                        width: double.infinity,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: const Color(0xffEFEFEF),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: FractionallySizedBox(
+                          alignment: Alignment.centerLeft,
+                          widthFactor: 0.40,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: AppColors.qlypPrimaryFreshGreen,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // --- SERVICE CATEGORY ---
+                      _sectionTitle("SERVICE CATEGORY"),
+                      const SizedBox(height: 12),
+                      // main_services dropdown
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                              color: AppColors.qlypCharcoal.withOpacity(0.3),
+                              width: 1.5),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 4),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<MainServiceModel>(
+                            dropdownColor: Colors.white,
+                            isExpanded: true,
+                            value: controller.selectedMainService.value
+                                        ?.mainServiceID !=
+                                    null
+                                ? controller.selectedMainService.value
+                                : null,
+                            hint: Text("Select Main Service",
+                                style: GoogleFonts.poppins(
+                                    color: AppColors.qlypDeepNavy,
+                                    fontSize: 14)),
+                            icon: const Icon(Icons.unfold_more_rounded,
+                                color: AppColors.qlypDeepNavy),
+                            items: controller.mainServiceList
+                                .map((MainServiceModel value) {
+                              return DropdownMenuItem<MainServiceModel>(
+                                value: value,
+                                child: Text(value.serviceName ?? '',
                                     style: GoogleFonts.poppins(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.9),
-                                      letterSpacing: -0.2,
-                                    ),
+                                        color: AppColors.qlypCharcoal,
+                                        fontSize: 14)),
+                              );
+                            }).toList(),
+                            onChanged: (MainServiceModel? newValue) {
+                              controller.selectedMainService.value = newValue;
+                              controller.getServicesByMainService();
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      // service dropdown
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                              color: AppColors.qlypCharcoal.withOpacity(0.3),
+                              width: 1.5),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 4),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<ServiceModel>(
+                            dropdownColor: Colors.white,
+                            isExpanded: true,
+                            value:
+                                controller.selectedServiceType.value.id != null
+                                    ? controller.selectedServiceType.value
+                                    : null,
+                            hint: Text("Select Service Category",
+                                style: GoogleFonts.poppins(
+                                    color: AppColors.qlypDeepNavy,
+                                    fontSize: 14)),
+                            icon: const Icon(Icons.unfold_more_rounded,
+                                color: AppColors.qlypDeepNavy),
+                            items: controller.serviceList
+                                .map((ServiceModel value) {
+                              return DropdownMenuItem<ServiceModel>(
+                                value: value,
+                                child: Text(
+                                    Constant.localizationTitle(value.title),
+                                    style: GoogleFonts.poppins(
+                                        color: AppColors.qlypCharcoal,
+                                        fontSize: 14)),
+                              );
+                            }).toList(),
+                            onChanged: (ServiceModel? newValue) {
+                              if (newValue != null) {
+                                controller.selectedServiceType.value = newValue;
+                                controller.getVehicleTypesByService();
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // --- VEHICLE TYPE ---
+                      _sectionTitle("VEHICLE TYPE"),
+                      const SizedBox(height: 12),
+                      GridView.count(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        childAspectRatio: 1.4,
+                        children: controller.vehicleTypeList.map((vehicleType) {
+                          bool isSelected =
+                              controller.selectedVehicleType.value?.id ==
+                                  vehicleType.id;
+                          return GestureDetector(
+                            onTap: () {
+                              controller.selectedVehicleType.value =
+                                  vehicleType;
+                            },
+                            child: _buildVehicleCard(
+                              Constant.localizationName(vehicleType.name),
+                              isSelected: isSelected,
+                              image: vehicleType.image ??
+                                  'https://firebasestorage.googleapis.com/v0/b/goride-1a752.appspot.com/o/placeholderImages%2Fuser-placeholder.jpeg?alt=media&token=34a73d67-ba1d-4fe4-a29f-271d3e3ca115',
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 8),
+
+                      // --- VEHICLE DETAILS ---
+                      _sectionTitle("VEHICLE DETAILS"),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _miniLabel("Year"),
+                                const SizedBox(height: 6),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xffF5F6F6),
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
-                                  const SizedBox(height: 12),
-
-                                  SizedBox(
-                                    height: Responsive.height(18, context),
-                                    child: ListView.builder(
-                                      itemCount: controller.serviceList.length,
-                                      scrollDirection: Axis.horizontal,
-                                      shrinkWrap: true,
-                                      itemBuilder: (context, index) {
-                                        ServiceModel serviceModel = controller.serviceList[index];
-                                        return Obx(
-                                              () {
-                                            final isSelected = controller.selectedServiceType.value.id == serviceModel.id;
-                                            return InkWell(
-                                              onTap: () async {
-                                                if (controller.driverModel.value.serviceId == null) {
-                                                  controller.selectedServiceType.value = serviceModel;
-                                                }
-                                              },
-                                              borderRadius: BorderRadius.circular(20),
-                                              child: Padding(
-                                                padding: const EdgeInsets.only(right: 10),
-                                                child: Container(
-                                                  width: Responsive.width(34, context),
-                                                  decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(20),
-
-                                                    // ✅ ONLY change selected color
-                                                    color: isSelected
-                                                        ? AppColors.qlypSecondaryWarmSand.withOpacity(0.18)
-                                                        : AppColors.qlypCharcoal.withOpacity(0.55),
-
-                                                    border: Border.all(
-                                                      color: isSelected
-                                                          ? AppColors.qlypSecondaryWarmSand
-                                                          : AppColors.qlypPrimaryFreshGreen.withOpacity(0.10),
-                                                      width: 1.4,
-                                                    ),
-
-                                                    boxShadow: isSelected
-                                                        ? [
-                                                      BoxShadow(
-                                                        color: AppColors.qlypSecondaryWarmSand.withOpacity(0.35),
-                                                        blurRadius: 22,
-                                                        offset: const Offset(0, 10),
-                                                      ),
-                                                    ]
-                                                        : [],
-                                                  ),
-
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.all(12),
-                                                    child: Column(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      children: [
-                                                        Container(
-                                                          decoration: BoxDecoration(
-                                                            color: AppColors.qlypCharcoal.withOpacity(0.65),
-                                                            borderRadius: BorderRadius.circular(18),
-                                                            border: Border.all(
-                                                              color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.08),
-                                                            ),
-                                                          ),
-                                                          child: Padding(
-                                                            padding: const EdgeInsets.all(8.0),
-                                                            child: CachedNetworkImage(
-                                                              imageUrl: serviceModel.image.toString(),
-                                                              fit: BoxFit.contain,
-                                                              height: Responsive.height(7.5, context),
-                                                              width: Responsive.width(18, context),
-                                                              placeholder: (context, url) => Constant.loader(isDarkTheme: isDark),
-                                                              errorWidget: (context, url, error) => Image.network(
-                                                                'https://firebasestorage.googleapis.com/v0/b/goride-1a752.appspot.com/o/placeholderImages%2Fuser-placeholder.jpeg?alt=media&token=34a73d67-ba1d-4fe4-a29f-271d3e3ca115',
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        const SizedBox(height: 10),
-                                                        Text(
-                                                          Constant.localizationTitle(serviceModel.title),
-                                                          textAlign: TextAlign.center,
-                                                          maxLines: 2,
-                                                          overflow: TextOverflow.ellipsis,
-                                                          style: GoogleFonts.poppins(
-                                                            fontSize: 12.5,
-                                                            fontWeight: FontWeight.w600,
-                                                            color: isSelected
-                                                                ? AppColors.qlypPrimaryFreshGreen
-                                                                : AppColors.qlypPrimaryFreshGreen.withOpacity(0.75),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            );
-                                          },
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 2),
+                                  child: DropdownButtonHideUnderline(
+                                    child: DropdownButton<String>(
+                                      dropdownColor: const Color(0xffF5F6F6),
+                                      isExpanded: true,
+                                      value: controller.selectedYear.value,
+                                      hint: Text(DateTime.now().year.toString(),
+                                          style: GoogleFonts.poppins(
+                                              color: const Color(0xff838EA1),
+                                              fontSize: 14)),
+                                      icon: const Icon(
+                                          Icons.unfold_more_rounded,
+                                          color: Color(0xff838EA1),
+                                          size: 18),
+                                      items: controller.yearList
+                                          .map((String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(value,
+                                              style: GoogleFonts.poppins(
+                                                  color: AppColors.qlypCharcoal,
+                                                  fontSize: 14)),
                                         );
+                                      }).toList(),
+                                      onChanged: (String? newValue) {
+                                        if (newValue != null) {
+                                          controller.selectedYear.value =
+                                              newValue;
+                                        }
                                       },
                                     ),
                                   ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            flex: 3,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _miniLabel("Color"),
+                                const SizedBox(height: 6),
+                                _buildTextField("e.g. Black", controller.colorController.value),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      _miniLabel("Make"),
+                      const SizedBox(height: 6),
+                      _buildTextField(
+                          "e.g. Toyota", controller.makeController.value),
+                      const SizedBox(height: 12),
+                      _miniLabel("Model"),
+                      const SizedBox(height: 6),
+                      _buildTextField(
+                          "e.g. Camry", controller.modelController.value),
+                      const SizedBox(height: 12),
+                      _miniLabel("TRIM"),
+                      const SizedBox(height: 6),
+                      _buildTextField("e.g., LE, XLE, Sport",
+                          controller.trimController.value),
+                      const SizedBox(height: 12),
+                      _miniLabel("VIN (NIV)"),
+                      const SizedBox(height: 6),
+                      _buildTextField("Vehicle Identification Number",
+                          controller.vinController.value),
 
-                                  const SizedBox(height: 18),
+                      const SizedBox(height: 32),
 
-                                  _sectionLabel("Vehicle Number"),
-                                  const SizedBox(height: 10),
-                                  _glassTextField(
-                                    context,
-                                    hint: "Vehicle Number".tr,
-                                    controller: controller.vehicleNumberController.value,
-                                    enabled: controller.driverModel.value.ownerId == null,
-                                    keyboardType: TextInputType.text,
-                                  ),
+                      // --- VEHICLE PHOTOS ---
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _sectionTitle("VEHICLE PHOTOS"),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xffEFEFEF),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              "REQUIRED",
+                              style: GoogleFonts.poppins(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xff838EA1)),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "High-quality photos speed up verification. Ensure the entire vehicle is visible.",
+                        style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: const Color(0xff838EA1),
+                            fontWeight: FontWeight.w400),
+                      ),
+                      const SizedBox(height: 16),
+                      GridView.count(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        childAspectRatio: 1.5,
+                        children: [
+                          _buildPhotoBox(context, controller, "FRONT VIEW"),
+                          _buildPhotoBox(context, controller, "REAR VIEW"),
+                          _buildPhotoBox(context, controller, "INTERIOR"),
+                          _buildPhotoBox(context, controller, "SIDE PROFILE"),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
+                ),
+              ),
 
-                                  const SizedBox(height: 14),
-
-                                  _sectionLabel("Registration Date"),
-                                  const SizedBox(height: 10),
-                                  InkWell(
-                                    onTap: () async {
-                                      if (controller.driverModel.value.ownerId == null) {
-                                        await Constant.selectDate(context).then((value) {
-                                          if (value != null) {
-                                            controller.selectedDate.value = value;
-                                            controller.registrationDateController.value.text =
-                                                DateFormat("dd-MM-yyyy").format(value);
-                                          }
-                                        });
-                                      }
-                                    },
-                                    borderRadius: BorderRadius.circular(16),
-                                    child: AbsorbPointer(
-                                      child: _glassTextField(
-                                        context,
-                                        hint: "Registration Date".tr,
-                                        controller: controller.registrationDateController.value,
-                                        enabled: false,
-                                        suffixIcon: Icons.calendar_month_rounded,
-                                      ),
-                                    ),
-                                  ),
-
-                                  const SizedBox(height: 14),
-
-                                  _sectionLabel("Vehicle Color"),
-                                  const SizedBox(height: 10),
-                                  AbsorbPointer(
-                                    absorbing: controller.driverModel.value.ownerId != null,
-                                    child: _glassDropdown<String>(
-                                      context,
-                                      value: controller.selectedColor.value.isEmpty ? null : controller.selectedColor.value,
-                                      hint: "Select vehicle color".tr,
-                                      items: controller.carColorList
-                                          .map((item) => DropdownMenuItem<String>(
-                                        value: item,
-                                        child: Text(item.toString()),
-                                      ))
-                                          .toList(),
-                                      onChanged: (value) => controller.selectedColor.value = value ?? "",
-                                    ),
-                                  ),
-
-                                  const SizedBox(height: 14),
-
-                                  _sectionLabel("Seats"),
-                                  const SizedBox(height: 10),
-                                  AbsorbPointer(
-                                    absorbing: controller.driverModel.value.ownerId != null,
-                                    child: _glassDropdown<String>(
-                                      context,
-                                      value: controller.seatsController.value.text.isEmpty ? null : controller.seatsController.value.text,
-                                      hint: "How Many Seats".tr,
-                                      items: controller.sheetList
-                                          .map((item) => DropdownMenuItem<String>(
-                                        value: item,
-                                        child: Text(item.toString()),
-                                      ))
-                                          .toList(),
-                                      onChanged: (value) => controller.seatsController.value.text = value ?? "",
-                                    ),
-                                  ),
-
-                                  const SizedBox(height: 14),
-
-                                  _sectionLabel("Zone"),
-                                  const SizedBox(height: 10),
-                                  InkWell(
-                                    onTap: () {
-                                      if (controller.driverModel.value.ownerId == null) {
-                                        controller.selectedTempZone.clear();
-                                        controller.selectedTempZone.addAll(controller.selectedZone);
-                                        zoneDialog(context, controller);
-                                      }
-                                    },
-                                    borderRadius: BorderRadius.circular(16),
-                                    child: AbsorbPointer(
-                                      child: _glassTextField(
-                                        context,
-                                        hint: "Select Zone".tr,
-                                        controller: controller.zoneNameController.value,
-                                        enabled: false,
-                                        suffixIcon: Icons.keyboard_arrow_down_rounded,
-                                      ),
-                                    ),
-                                  ),
-
-                                  const SizedBox(height: 14),
-
-                                  if (controller.selectedPrices.isNotEmpty)
-                                    Obx(
-                                          () => Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(16),
-                                          color: AppColors.qlypCharcoal.withOpacity(0.35),
-                                          border: Border.all(
-                                            color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.12),
-                                            width: 1,
-                                          ),
-                                        ),
-                                        width: Responsive.width(100, context),
-                                        child: DefaultTabController(
-                                          length: controller.selectedPrices.length,
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              TabBar(
-                                                onTap: (value) {
-                                                  controller.tabBarheight.value =
-                                                  controller.selectedPrices[value].isAcNonAc == true ? 200 : 100;
-                                                  controller.update();
-                                                },
-                                                indicatorColor: AppColors.qlypSecondaryWarmSand,
-                                                padding: const EdgeInsets.symmetric(horizontal: 8),
-                                                isScrollable: true,
-                                                labelColor: AppColors.qlypSecondaryWarmSand,
-                                                unselectedLabelColor: AppColors.qlypPrimaryFreshGreen.withOpacity(0.55),
-                                                labelStyle: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600),
-                                                tabs: controller.selectedPrices.map((price) {
-                                                  final zoneName = Constant.localizationName(
-                                                    controller.zoneAllList
-                                                        .firstWhere(
-                                                          (zone) => zone.id == price.zoneId,
-                                                      orElse: () => ZoneModel(),
-                                                    )
-                                                        .name,
-                                                  );
-                                                  return Tab(text: zoneName);
-                                                }).toList(),
-                                              ),
-                                              SizedBox(
-                                                height: controller.tabBarheight.value,
-                                                child: TabBarView(
-                                                  physics: const NeverScrollableScrollPhysics(),
-                                                  children: controller.selectedPrices.map((price) {
-                                                    int index = controller.selectedPrices.indexOf(price);
-
-                                                    if (price.isAcNonAc == true) {
-                                                      return Padding(
-                                                        padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-                                                        child: SingleChildScrollView(
-                                                          child: Column(
-                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                            children: [
-                                                              _miniLabel("A/C Per ${Constant.distanceType} Rate"),
-                                                              const SizedBox(height: 8),
-                                                              _glassTextField(
-                                                                context,
-                                                                hint: 'A/C Per ${Constant.distanceType} Rate'.tr,
-                                                                enabled: controller.driverModel.value.ownerId == null,
-                                                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                                                controller: controller.acPerKmRate[index],
-                                                                prefixText: Constant.currencyModel!.symbol.toString(),
-                                                              ),
-                                                              const SizedBox(height: 14),
-                                                              _miniLabel("Non A/C Per ${Constant.distanceType} Rate"),
-                                                              const SizedBox(height: 8),
-                                                              _glassTextField(
-                                                                context,
-                                                                hint: 'Non A/C Per ${Constant.distanceType} Rate'.tr,
-                                                                enabled: controller.driverModel.value.ownerId == null,
-                                                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                                                controller: controller.nonAcPerKmRate[index],
-                                                                prefixText: Constant.currencyModel!.symbol.toString(),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      );
-                                                    } else {
-                                                      return Padding(
-                                                        padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-                                                        child: SingleChildScrollView(
-                                                          child: Column(
-                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                            children: [
-                                                              _miniLabel("Per ${Constant.distanceType} Rate"),
-                                                              const SizedBox(height: 8),
-                                                              _glassTextField(
-                                                                context,
-                                                                hint: 'Per ${Constant.distanceType} Rate'.tr,
-                                                                enabled: controller.driverModel.value.ownerId == null,
-                                                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                                                controller: controller.acNonAcWithoutPerKmRate[index],
-                                                                prefixText: Constant.currencyModel!.symbol.toString(),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      );
-                                                    }
-                                                  }).toList(),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                  const SizedBox(height: 18),
-
-                                  Text(
-                                    "Select Your Rules".tr,
-                                    style: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 16,
-                                      color: AppColors.qlypPrimaryFreshGreen,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 6),
-
-                                  ListBody(
-                                    children: controller.driverRulesList
-                                        .map(
-                                          (item) => CheckboxListTile(
-                                        contentPadding: EdgeInsets.zero,
-                                        dense: true,
-                                        activeColor: AppColors.qlypSecondaryWarmSand,
-                                        checkColor: AppColors.qlypCharcoal,
-                                        value: controller.selectedDriverRulesList.indexWhere((e) => e.id == item.id) == -1
-                                            ? false
-                                            : true,
-                                        title: Text(
-                                          Constant.localizationName(item.name),
-                                          style: GoogleFonts.poppins(
-                                            fontWeight: FontWeight.w400,
-                                            color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.85),
-                                          ),
-                                        ),
-                                        enabled: controller.driverModel.value.ownerId == null,
-                                        onChanged: (value) {
-                                          if (value == true) {
-                                            controller.selectedDriverRulesList.add(item);
-                                          } else {
-                                            controller.selectedDriverRulesList.removeAt(
-                                              controller.selectedDriverRulesList.indexWhere((e) => e.id == item.id),
-                                            );
-                                          }
-                                        },
-                                      ),
-                                    )
-                                        .toList(),
-                                  ),
-
-                                  const SizedBox(height: 14),
-
-                                  if (controller.driverModel.value.ownerId == null) ...[
-                                    // ✅ QLYP-style primary button (gradient + glow)
-                                    SizedBox(
-                                      width: double.infinity,
-                                      height: 58,
-                                      child: Material(
-                                        color: Colors.transparent,
-                                        borderRadius: BorderRadius.circular(18),
-                                        child: InkWell(
-                                          borderRadius: BorderRadius.circular(18),
-                                          onTap: () async {
-                                            ShowToastDialog.showLoader("Please wait".tr);
-
-                                            if (controller.selectedServiceType.value.id == null ||
-                                                controller.selectedServiceType.value.id!.isEmpty) {
-                                              ShowToastDialog.showToast("Please select service".tr);
-                                              return;
-                                            }
-
-                                            if (controller.vehicleNumberController.value.text.isEmpty) {
-                                              ShowToastDialog.showToast("Please enter Vehicle number".tr);
-                                            } else if (controller.registrationDateController.value.text.isEmpty) {
-                                              ShowToastDialog.showToast("Please select registration date".tr);
-                                            } else if (controller.selectedColor.value.isEmpty) {
-                                              ShowToastDialog.showToast("Please enter Vehicle color".tr);
-                                            } else if (controller.seatsController.value.text.isEmpty) {
-                                              ShowToastDialog.showToast("Please enter seats".tr);
-                                            } else if (controller.selectedZone.isEmpty) {
-                                              ShowToastDialog.showToast("Please select Zone".tr);
-                                            } else {
-                                              for (int index = 0; index < controller.selectedPrices.length; index++) {
-                                                ZoneModel zoneModel = await FireStoreUtils.getZoneById(
-                                                  zoneId: controller.selectedPrices[index].zoneId!,
-                                                );
-
-                                                if (controller.selectedPrices[index].isAcNonAc == true) {
-                                                  if (controller.acPerKmRate[index].text.isEmpty) {
-                                                    ShowToastDialog.showToast(
-                                                      "${'Please enter A/C Per'.tr} ${Constant.distanceType} ${'Rate for'.tr} ${Constant.localizationName(zoneModel.name)} ${'Zone'.tr}."
-                                                          .tr,
-                                                    );
-                                                    return;
-                                                  } else if (double.parse(controller.selectedPrices[index].acCharge.toString()) <
-                                                      double.parse(controller.acPerKmRate[index].text)) {
-                                                    ShowToastDialog.showToast(
-                                                      "${"Maximum allowed value is".tr} ${controller.selectedPrices[index].acCharge.toString()} ${"Please enter a lower A/c value for".tr} ${Constant.localizationName(zoneModel.name)} ${'Zone'.tr}."
-                                                          .tr,
-                                                    );
-                                                    return;
-                                                  } else if (controller.nonAcPerKmRate[index].text.isEmpty) {
-                                                    ShowToastDialog.showToast(
-                                                      "${"Please enter Non A/C Per".tr} ${Constant.distanceType} ${'Rate for'} ${Constant.localizationName(zoneModel.name)} ${'Zone'.tr}."
-                                                          .tr,
-                                                    );
-                                                    return;
-                                                  } else if (double.parse(controller.selectedPrices[index].nonAcCharge.toString()) <
-                                                      double.parse(controller.nonAcPerKmRate[index].text)) {
-                                                    ShowToastDialog.showToast(
-                                                      "${"Maximum allowed value is".tr} ${controller.selectedPrices[index].nonAcCharge.toString()} ${"Please enter a lower Non A/c value for".tr} ${Constant.localizationName(zoneModel.name)} ${'Zone'.tr}."
-                                                          .tr,
-                                                    );
-                                                    return;
-                                                  }
-                                                } else if (controller.selectedPrices[index].isAcNonAc == false) {
-                                                  ZoneModel zoneData = await FireStoreUtils.getZoneById(
-                                                    zoneId: controller.selectedPrices[index].zoneId!,
-                                                  );
-
-                                                  if (controller.acNonAcWithoutPerKmRate[index].text.isEmpty) {
-                                                    ShowToastDialog.showToast(
-                                                      "${"Please enter Per".tr} ${Constant.distanceType} ${"Rate for".tr} ${Constant.localizationName(zoneData.name)} ${'Zone'.tr}."
-                                                          .tr,
-                                                    );
-                                                    return;
-                                                  } else if (double.parse(controller.selectedPrices[index].kmCharge.toString()) <
-                                                      double.parse(controller.acNonAcWithoutPerKmRate[index].text)) {
-                                                    ShowToastDialog.showToast(
-                                                      "${"Maximum allowed value is".tr} ${controller.selectedPrices[index].kmCharge.toString()} ${"Please enter a lower price for".tr} ${Constant.localizationName(zoneData.name)} ${'Zone'.tr}."
-                                                          .tr,
-                                                    );
-                                                    return;
-                                                  }
-                                                }
-                                              }
-                                              controller.saveDetails();
-                                            }
-                                          },
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(18),
-                                              gradient: LinearGradient(
-                                                begin: Alignment.centerLeft,
-                                                end: Alignment.centerRight,
-                                                colors: [
-                                                  AppColors.qlypSecondaryWarmSand,
-                                                  AppColors.qlypPrimarySunYellow,
-                                                ],
-                                              ),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: AppColors.qlypPrimarySunYellow.withOpacity(0.35),
-                                                  blurRadius: 20,
-                                                  offset: const Offset(0, 8),
-                                                ),
-                                                BoxShadow(
-                                                  color: AppColors.qlypSecondaryWarmSand.withOpacity(0.25),
-                                                  blurRadius: 10,
-                                                  offset: const Offset(0, 4),
-                                                ),
-                                              ],
-                                            ),
-                                            child: Center(
-                                              child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    "Save".tr,
-                                                    style: GoogleFonts.poppins(
-                                                      fontSize: 16,
-                                                      fontWeight: FontWeight.w800,
-                                                      color: AppColors.qlypCharcoal,
-                                                      letterSpacing: -0.2,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 10),
-                                                  Icon(
-                                                    Icons.check_circle_rounded,
-                                                    color: AppColors.qlypCharcoal,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      "You can not change once you select one service type if you want to change please contact to administrator",
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 12.5,
-                                        color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.65),
-                                      ),
-                                    ),
-                                  ],
-
-                                  const SizedBox(height: 6),
-                                ],
-                              ),
+              // --- Bottom Sticky Bar ---
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, -5),
+                    )
+                  ],
+                ),
+                child: SafeArea(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () => Get.back(),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            backgroundColor: const Color(0xffF5F6F6),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: Text(
+                            "Back",
+                            style: GoogleFonts.poppins(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black,
                             ),
                           ),
                         ),
-
-                        const SizedBox(height: 24),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        flex: 2,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            controller.validateAndSave();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            backgroundColor: const Color(0xff12223b),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Continue",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(Icons.arrow_forward,
+                                  color: Colors.white, size: 20),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },
     );
   }
 
-  // -------------------- UI helpers (QLYP style) --------------------
-
-  static Widget _dot(Color color, double size) => Container(
-    width: size,
-    height: size,
-    decoration: BoxDecoration(shape: BoxShape.circle, color: color),
-  );
-
-  static Widget _sectionLabel(String text) => Text(
-    text.tr,
-    style: GoogleFonts.poppins(
-      fontSize: 14,
-      fontWeight: FontWeight.w600,
-      color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.9),
-      letterSpacing: -0.2,
-    ),
-  );
-
-  static Widget _miniLabel(String text) => Text(
-    text.tr,
-    style: GoogleFonts.poppins(
-      fontSize: 13,
-      fontWeight: FontWeight.w600,
-      color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.85),
-    ),
-  );
-
-  static Widget _glassTextField(
-      BuildContext context, {
-        required String hint,
-        required TextEditingController controller,
-        required bool enabled,
-        TextInputType? keyboardType,
-        IconData? suffixIcon,
-        String? prefixText,
-      }) {
-    return Container(
-      height: 58,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.15),
-          width: 1.5,
-        ),
-        color: AppColors.qlypCharcoal.withOpacity(0.60),
+  Widget _sectionTitle(String title) {
+    return Text(
+      title,
+      style: GoogleFonts.poppins(
+        color: const Color(0xff838EA1),
+        fontWeight: FontWeight.w700,
+        fontSize: 11,
+        letterSpacing: 1.2,
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 14),
-      child: Row(
+    );
+  }
+
+  Widget _miniLabel(String title) {
+    return Text(
+      title,
+      style: GoogleFonts.poppins(
+        color: Colors.black,
+        fontWeight: FontWeight.w600,
+        fontSize: 13,
+      ),
+    );
+  }
+
+  Widget _buildTextField(String hint, [TextEditingController? controller]) {
+    return TextField(
+      style: TextStyle(
+        color: AppColors.qlypCharcoal, // Set your desired color here
+      ),
+      controller: controller,
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: GoogleFonts.poppins(
+          color: AppColors.qlypCharcoal.withOpacity(0.3),
+          fontWeight: FontWeight.w400,
+          fontSize: 14,
+        ),
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+      ),
+    );
+  }
+
+  Widget _buildVehicleCard(String title,
+      {required bool isSelected, required String image}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: isSelected
+            ? const Color(0xff12223b)
+            : Colors.black.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(16),
+        image: DecorationImage(
+          image: NetworkImage(image),
+          fit: BoxFit.contain,
+          colorFilter: isSelected
+              ? null
+              : ColorFilter.mode(
+                  Colors.black.withOpacity(0.5), BlendMode.darken),
+        ),
+        border: isSelected
+            ? Border.all(color: AppColors.qlypCharcoal, width: 2)
+            : Border.all(color: Colors.transparent, width: 2),
+      ),
+      child: Stack(
         children: [
-          if (prefixText != null) ...[
-            Text(
-              prefixText,
+          Positioned(
+            bottom: 0,
+            left: 12,
+            child: Text(
+              title,
               style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
                 fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.85),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Container(
-              width: 1,
-              height: 22,
-              color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.12),
-            ),
-            const SizedBox(width: 12),
-          ],
-          Expanded(
-            child: TextFormField(
-              controller: controller,
-              enabled: enabled,
-              keyboardType: keyboardType,
-              cursorColor: AppColors.qlypSecondaryWarmSand,
-              style: GoogleFonts.poppins(
-                color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.95),
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: hint,
-                hintStyle: GoogleFonts.poppins(
-                  color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.40),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                ),
               ),
             ),
           ),
-          if (suffixIcon != null) ...[
-            const SizedBox(width: 8),
-            Icon(
-              suffixIcon,
-              color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.55),
-              size: 20,
+          if (isSelected)
+            const Positioned(
+              top: 90,
+              right: 8,
+              child: Icon(Icons.check_circle, color: Colors.white, size: 20),
             ),
-          ],
         ],
       ),
     );
   }
 
-  static Widget _glassDropdown<T>(
-      BuildContext context, {
-        required T? value,
-        required String hint,
-        required List<DropdownMenuItem<T>> items,
-        required ValueChanged<T?> onChanged,
-      }) {
-    return Container(
-      height: 58,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.15),
-          width: 1.5,
-        ),
-        color: AppColors.qlypCharcoal.withOpacity(0.60),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 14),
-      child: DropdownButtonFormField<T>(
-        value: value,
-        items: items,
-        onChanged: onChanged,
-        decoration: const InputDecoration(border: InputBorder.none),
-        dropdownColor: AppColors.qlypCharcoal,
-        icon: Icon(
-          Icons.keyboard_arrow_down_rounded,
-          color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.7),
-        ),
-        style: GoogleFonts.poppins(
-          color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.95),
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-        ),
-        hint: Text(
-          hint,
-          style: GoogleFonts.poppins(
-            color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.40),
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
+  Widget _buildPhotoBox(BuildContext context,
+      VehicleInformationController controller, String title) {
+    return Obx(() {
+      final file = controller.selectedPhotos[title];
+      return GestureDetector(
+        onTap: () => controller.pickVehiclePhoto(title),
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xffF5F6F6),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: const Color(0xffEFEFEF), width: 1.5),
+            image: file != null
+                ? DecorationImage(
+                    image: FileImage(file),
+                    fit: BoxFit.cover,
+                  )
+                : null,
           ),
-        ),
-        validator: (v) => v == null ? 'field required' : null,
-      ),
-    );
-  }
-
-  // -------------------- dialog (logic unchanged, UI styled) --------------------
-
-  void zoneDialog(BuildContext context, VehicleInformationController controller) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: AppColors.qlypCharcoal.withOpacity(0.98),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Text(
-            'Zone list'.tr,
-            style: GoogleFonts.poppins(
-              fontWeight: FontWeight.w700,
-              color: AppColors.qlypPrimaryFreshGreen,
-            ),
-          ),
-          content: SizedBox(
-            width: Responsive.width(90, context),
-            child: controller.zoneList.isEmpty
-                ? const SizedBox.shrink()
-                : Obx(
-                  () => ListView.builder(
-                shrinkWrap: true,
-                itemCount: controller.zoneList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Obx(
-                        () => CheckboxListTile(
-                      contentPadding: EdgeInsets.zero,
-                      activeColor: AppColors.qlypSecondaryWarmSand,
-                      checkColor: AppColors.qlypCharcoal,
-                      value: controller.selectedTempZone.contains(controller.zoneList[index].id),
-                      onChanged: (value) {
-                        if (controller.selectedTempZone.contains(controller.zoneList[index].id)) {
-                          controller.selectedTempZone.remove(controller.zoneList[index].id);
-                        } else {
-                          controller.selectedTempZone.add(controller.zoneList[index].id);
-                        }
-                      },
-                      title: Text(
-                        Constant.localizationName(controller.zoneList[index].name),
-                        style: GoogleFonts.poppins(
-                          color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.85),
-                          fontWeight: FontWeight.w500,
+          child: file == null
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.add_a_photo_outlined,
+                        color: Color(0xff838EA1), size: 28),
+                    const SizedBox(height: 8),
+                    Text(
+                      title,
+                      style: GoogleFonts.poppins(
+                        color: const Color(0xff838EA1),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 10,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
+                )
+              : Stack(
+                  children: [
+                    Positioned(
+                      top: 4,
+                      right: 4,
+                      child: GestureDetector(
+                        onTap: () => controller.selectedPhotos[title] = null,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.black54,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.close,
+                              color: Colors.white, size: 16),
                         ),
                       ),
                     ),
-                  );
-                },
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                controller.selectedTempZone.value = controller.selectedZone;
-                Get.back();
-              },
-              child: Text(
-                "Cancel".tr,
-                style: GoogleFonts.poppins(
-                  color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.75),
-                  fontWeight: FontWeight.w600,
+                  ],
                 ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                controller.selectedZone.clear();
-                controller.selectedZone.addAll(controller.selectedTempZone);
-
-                if (controller.selectedTempZone.isEmpty) {
-                  ShowToastDialog.showToast("Please select zone".tr);
-                } else {
-                  controller.selectedPrices.value = controller.selectedServiceType.value.prices
-                      ?.where((price) => controller.selectedZone.contains(price.zoneId))
-                      .toList() ??
-                      <Price>[];
-
-                  controller.acPerKmRate.value = List.generate(
-                    controller.selectedPrices.length,
-                        (index) => TextEditingController(),
-                  );
-                  controller.nonAcPerKmRate.value = List.generate(
-                    controller.selectedPrices.length,
-                        (index) => TextEditingController(),
-                  );
-                  controller.acNonAcWithoutPerKmRate.value = List.generate(
-                    controller.selectedPrices.length,
-                        (index) => TextEditingController(),
-                  );
-
-                  final hasAcNonAc = controller.selectedPrices.any((e) => e.isAcNonAc == true);
-                  controller.tabBarheight.value = hasAcNonAc ? 200 : 100;
-
-                  String nameValue = "";
-                  for (var element in controller.selectedZone) {
-                    List<ZoneModel> list = controller.zoneList.where((p0) => p0.id == element).toList();
-                    if (list.isNotEmpty) {
-                      nameValue = "$nameValue${nameValue.isEmpty ? "" : ","} ${Constant.localizationName(list.first.name)}";
-                    }
-                  }
-                  controller.zoneNameController.value.text = nameValue;
-                  controller.update();
-                  Get.back();
-                }
-              },
-              child: Text(
-                "Continue".tr,
-                style: GoogleFonts.poppins(
-                  color: AppColors.qlypSecondaryWarmSand,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
+        ),
+      );
+    });
   }
 }
 
-
+// --------------------- OLD CODE PRESERVED BELOW ---------------------
+// class _OldVehicleInformationScreen extends StatelessWidget {
+//   const _OldVehicleInformationScreen({super.key});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final themeChange = Provider.of<DarkThemeProvider>(context);
+//
+//     return GetX<VehicleInformationController>(
+//       init: VehicleInformationController(),
+//       builder: (controller) {
+//         final isDark = themeChange.getThem();
+//
+//         return Container(
+//           // ✅ QLYP-style gradient background (same vibe as Login UI)
+//           decoration: BoxDecoration(
+//             gradient: LinearGradient(
+//               begin: Alignment.topCenter,
+//               end: Alignment.bottomCenter,
+//               colors: [
+//                 AppColors.qlypOffWhite.withOpacity(0.98),
+//                 AppColors.qlypCharcoal,
+//                 AppColors.qlypCharcoal.withOpacity(0.95),
+//               ],
+//               stops: const [0.0, 0.4, 1.0],
+//             ),
+//           ),
+//           child: Scaffold(
+//             backgroundColor: Colors.transparent,
+//             extendBody: true,
+//             drawerEnableOpenDragGesture: false,
+//             body: Stack(
+//               children: [
+//                 // ✅ background blobs
+//                 Positioned(
+//                   top: -100,
+//                   right: -50,
+//                   child: Container(
+//                     width: 300,
+//                     height: 300,
+//                     decoration: BoxDecoration(
+//                       shape: BoxShape.circle,
+//                       gradient: RadialGradient(
+//                         colors: [
+//                           AppColors.qlypDeepNavy.withOpacity(0.25),
+//                           AppColors.qlypDeepNavy.withOpacity(0.10),
+//                           Colors.transparent,
+//                         ],
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//                 Positioned(
+//                   bottom: -110,
+//                   left: -60,
+//                   child: Container(
+//                     width: 260,
+//                     height: 260,
+//                     decoration: BoxDecoration(
+//                       shape: BoxShape.circle,
+//                       gradient: RadialGradient(
+//                         colors: [
+//                           AppColors.qlypPrimaryFreshGreen.withOpacity(0.15),
+//                           AppColors.qlypPrimaryFreshGreen.withOpacity(0.05),
+//                           Colors.transparent,
+//                         ],
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//
+//                 // ✅ floating particles
+//                 Positioned(
+//                   top: 150,
+//                   left: 30,
+//                   child: _dot(
+//                       AppColors.qlypSecondaryWarmSand.withOpacity(0.40), 8),
+//                 ),
+//                 Positioned(
+//                   top: 280,
+//                   right: 40,
+//                   child:
+//                       _dot(AppColors.qlypPrimarySunYellow.withOpacity(0.30), 6),
+//                 ),
+//                 Positioned(
+//                   bottom: 200,
+//                   right: 60,
+//                   child: _dot(AppColors.qlypDeepNavy.withOpacity(0.30), 10),
+//                 ),
+//
+//                 SafeArea(
+//                   child: controller.isLoading.value
+//                       ? Constant.loader(isDarkTheme: isDark)
+//                       : SingleChildScrollView(
+//                           padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+//                           child: Column(
+//                             crossAxisAlignment: CrossAxisAlignment.start,
+//                             children: [
+//                               // ✅ header (replaces old empty spacer)
+//                               Row(
+//                                 children: [
+//                                   Container(
+//                                     width: 44,
+//                                     height: 44,
+//                                     decoration: BoxDecoration(
+//                                       borderRadius: BorderRadius.circular(14),
+//                                       color: AppColors.qlypCharcoal
+//                                           .withOpacity(0.35),
+//                                       border: Border.all(
+//                                         color: AppColors.qlypPrimaryFreshGreen
+//                                             .withOpacity(0.10),
+//                                       ),
+//                                     ),
+//                                     child: Icon(
+//                                       Icons.directions_car_rounded,
+//                                       color: AppColors.qlypPrimaryFreshGreen
+//                                           .withOpacity(0.9),
+//                                     ),
+//                                   ),
+//                                   const SizedBox(width: 12),
+//                                   Expanded(
+//                                     child: Column(
+//                                       crossAxisAlignment:
+//                                           CrossAxisAlignment.start,
+//                                       children: [
+//                                         Text(
+//                                           "Vehicle Information".tr,
+//                                           style: GoogleFonts.poppins(
+//                                             fontSize: 20,
+//                                             fontWeight: FontWeight.w800,
+//                                             color:
+//                                                 AppColors.qlypPrimaryFreshGreen,
+//                                             letterSpacing: -0.3,
+//                                           ),
+//                                         ),
+//                                         const SizedBox(height: 3),
+//                                         Text(
+//                                           "Complete details to start taking rides"
+//                                               .tr,
+//                                           style: GoogleFonts.poppins(
+//                                             fontSize: 13,
+//                                             fontWeight: FontWeight.w400,
+//                                             color: AppColors
+//                                                 .qlypPrimaryFreshGreen
+//                                                 .withOpacity(0.7),
+//                                           ),
+//                                         ),
+//                                       ],
+//                                     ),
+//                                   ),
+//                                 ],
+//                               ),
+//
+//                               const SizedBox(height: 18),
+//
+//                               // ✅ glass card container (same look as login card)
+//                               Container(
+//                                 decoration: BoxDecoration(
+//                                   borderRadius: BorderRadius.circular(10),
+//                                   color:
+//                                       AppColors.qlypCharcoal.withOpacity(0.40),
+//                                   border: Border.all(
+//                                     color: AppColors.qlypPrimaryFreshGreen
+//                                         .withOpacity(0.08),
+//                                     width: 1,
+//                                   ),
+//                                   boxShadow: [
+//                                     BoxShadow(
+//                                       color: Colors.black.withOpacity(0.30),
+//                                       blurRadius: 40,
+//                                       offset: const Offset(0, 20),
+//                                     ),
+//                                     BoxShadow(
+//                                       color: AppColors.qlypPrimaryFreshGreen
+//                                           .withOpacity(0.05),
+//                                       blurRadius: 2,
+//                                       offset: const Offset(0, 1),
+//                                     ),
+//                                   ],
+//                                 ),
+//                                 child: ClipRRect(
+//                                   borderRadius: BorderRadius.circular(28),
+//                                   child: Padding(
+//                                     padding: const EdgeInsets.all(18),
+//                                     child: Column(
+//                                       crossAxisAlignment:
+//                                           CrossAxisAlignment.start,
+//                                       children: [
+//                                         Text(
+//                                           "Service Type".tr,
+//                                           style: GoogleFonts.poppins(
+//                                             fontSize: 15,
+//                                             fontWeight: FontWeight.w600,
+//                                             color: AppColors
+//                                                 .qlypPrimaryFreshGreen
+//                                                 .withOpacity(0.9),
+//                                             letterSpacing: -0.2,
+//                                           ),
+//                                         ),
+//                                         const SizedBox(height: 12),
+//                                         SizedBox(
+//                                           height:
+//                                               Responsive.height(18, context),
+//                                           child: ListView.builder(
+//                                             itemCount:
+//                                                 controller.serviceList.length,
+//                                             scrollDirection: Axis.horizontal,
+//                                             shrinkWrap: true,
+//                                             itemBuilder: (context, index) {
+//                                               ServiceModel serviceModel =
+//                                                   controller.serviceList[index];
+//                                               return Obx(
+//                                                 () {
+//                                                   final isSelected = controller
+//                                                           .selectedServiceType
+//                                                           .value
+//                                                           .id ==
+//                                                       serviceModel.id;
+//                                                   return InkWell(
+//                                                     onTap: () async {
+//                                                       if (controller
+//                                                               .driverModel
+//                                                               .value
+//                                                               .serviceId ==
+//                                                           null) {
+//                                                         controller
+//                                                             .selectedServiceType
+//                                                             .value = serviceModel;
+//                                                       }
+//                                                     },
+//                                                     borderRadius:
+//                                                         BorderRadius.circular(
+//                                                             20),
+//                                                     child: Padding(
+//                                                       padding:
+//                                                           const EdgeInsets.only(
+//                                                               right: 10),
+//                                                       child: Container(
+//                                                         width: Responsive.width(
+//                                                             34, context),
+//                                                         decoration:
+//                                                             BoxDecoration(
+//                                                           borderRadius:
+//                                                               BorderRadius
+//                                                                   .circular(20),
+//
+//                                                           // ✅ ONLY change selected color
+//                                                           color: isSelected
+//                                                               ? AppColors
+//                                                                   .qlypSecondaryWarmSand
+//                                                                   .withOpacity(
+//                                                                       0.18)
+//                                                               : AppColors
+//                                                                   .qlypCharcoal
+//                                                                   .withOpacity(
+//                                                                       0.55),
+//
+//                                                           border: Border.all(
+//                                                             color: isSelected
+//                                                                 ? AppColors
+//                                                                     .qlypSecondaryWarmSand
+//                                                                 : AppColors
+//                                                                     .qlypPrimaryFreshGreen
+//                                                                     .withOpacity(
+//                                                                         0.10),
+//                                                             width: 1.4,
+//                                                           ),
+//
+//                                                           boxShadow: isSelected
+//                                                               ? [
+//                                                                   BoxShadow(
+//                                                                     color: AppColors
+//                                                                         .qlypSecondaryWarmSand
+//                                                                         .withOpacity(
+//                                                                             0.35),
+//                                                                     blurRadius:
+//                                                                         22,
+//                                                                     offset:
+//                                                                         const Offset(
+//                                                                             0,
+//                                                                             10),
+//                                                                   ),
+//                                                                 ]
+//                                                               : [],
+//                                                         ),
+//                                                         child: Padding(
+//                                                           padding:
+//                                                               const EdgeInsets
+//                                                                   .all(12),
+//                                                           child: Column(
+//                                                             mainAxisAlignment:
+//                                                                 MainAxisAlignment
+//                                                                     .center,
+//                                                             children: [
+//                                                               Container(
+//                                                                 decoration:
+//                                                                     BoxDecoration(
+//                                                                   color: AppColors
+//                                                                       .qlypCharcoal
+//                                                                       .withOpacity(
+//                                                                           0.65),
+//                                                                   borderRadius:
+//                                                                       BorderRadius
+//                                                                           .circular(
+//                                                                               18),
+//                                                                   border: Border
+//                                                                       .all(
+//                                                                     color: AppColors
+//                                                                         .qlypPrimaryFreshGreen
+//                                                                         .withOpacity(
+//                                                                             0.08),
+//                                                                   ),
+//                                                                 ),
+//                                                                 child: Padding(
+//                                                                   padding:
+//                                                                       const EdgeInsets
+//                                                                           .all(
+//                                                                           8.0),
+//                                                                   child:
+//                                                                       CachedNetworkImage(
+//                                                                     imageUrl: serviceModel
+//                                                                         .image
+//                                                                         .toString(),
+//                                                                     fit: BoxFit
+//                                                                         .contain,
+//                                                                     height: Responsive
+//                                                                         .height(
+//                                                                             7.5,
+//                                                                             context),
+//                                                                     width: Responsive
+//                                                                         .width(
+//                                                                             18,
+//                                                                             context),
+//                                                                     placeholder: (context,
+//                                                                             url) =>
+//                                                                         Constant.loader(
+//                                                                             isDarkTheme:
+//                                                                                 isDark),
+//                                                                     errorWidget: (context,
+//                                                                             url,
+//                                                                             error) =>
+//                                                                         Image
+//                                                                             .network(
+//                                                                       'https://firebasestorage.googleapis.com/v0/b/goride-1a752.appspot.com/o/placeholderImages%2Fuser-placeholder.jpeg?alt=media&token=34a73d67-ba1d-4fe4-a29f-271d3e3ca115',
+//                                                                     ),
+//                                                                   ),
+//                                                                 ),
+//                                                               ),
+//                                                               const SizedBox(
+//                                                                   height: 10),
+//                                                               Text(
+//                                                                 Constant.localizationTitle(
+//                                                                     serviceModel
+//                                                                         .title),
+//                                                                 textAlign:
+//                                                                     TextAlign
+//                                                                         .center,
+//                                                                 maxLines: 2,
+//                                                                 overflow:
+//                                                                     TextOverflow
+//                                                                         .ellipsis,
+//                                                                 style:
+//                                                                     GoogleFonts
+//                                                                         .poppins(
+//                                                                   fontSize:
+//                                                                       12.5,
+//                                                                   fontWeight:
+//                                                                       FontWeight
+//                                                                           .w600,
+//                                                                   color: isSelected
+//                                                                       ? AppColors
+//                                                                           .qlypPrimaryFreshGreen
+//                                                                       : AppColors
+//                                                                           .qlypPrimaryFreshGreen
+//                                                                           .withOpacity(
+//                                                                               0.75),
+//                                                                 ),
+//                                                               ),
+//                                                             ],
+//                                                           ),
+//                                                         ),
+//                                                       ),
+//                                                     ),
+//                                                   );
+//                                                 },
+//                                               );
+//                                             },
+//                                           ),
+//                                         ),
+//                                         const SizedBox(height: 18),
+//                                         _sectionLabel("Vehicle Number"),
+//                                         const SizedBox(height: 10),
+//                                         _glassTextField(
+//                                           context,
+//                                           hint: "Vehicle Number".tr,
+//                                           controller: controller
+//                                               .vehicleNumberController.value,
+//                                           enabled: controller
+//                                                   .driverModel.value.ownerId ==
+//                                               null,
+//                                           keyboardType: TextInputType.text,
+//                                         ),
+//                                         const SizedBox(height: 14),
+//                                         _sectionLabel("Registration Date"),
+//                                         const SizedBox(height: 10),
+//                                         InkWell(
+//                                           onTap: () async {
+//                                             if (controller.driverModel.value
+//                                                     .ownerId ==
+//                                                 null) {
+//                                               await Constant.selectDate(context)
+//                                                   .then((value) {
+//                                                 if (value != null) {
+//                                                   controller.selectedDate
+//                                                       .value = value;
+//                                                   controller
+//                                                       .registrationDateController
+//                                                       .value
+//                                                       .text = DateFormat(
+//                                                           "dd-MM-yyyy")
+//                                                       .format(value);
+//                                                 }
+//                                               });
+//                                             }
+//                                           },
+//                                           borderRadius:
+//                                               BorderRadius.circular(16),
+//                                           child: AbsorbPointer(
+//                                             child: _glassTextField(
+//                                               context,
+//                                               hint: "Registration Date".tr,
+//                                               controller: controller
+//                                                   .registrationDateController
+//                                                   .value,
+//                                               enabled: false,
+//                                               suffixIcon:
+//                                                   Icons.calendar_month_rounded,
+//                                             ),
+//                                           ),
+//                                         ),
+//                                         const SizedBox(height: 14),
+//                                         _sectionLabel("Vehicle Color"),
+//                                         const SizedBox(height: 10),
+//                                         AbsorbPointer(
+//                                           absorbing: controller
+//                                                   .driverModel.value.ownerId !=
+//                                               null,
+//                                           child: _glassDropdown<String>(
+//                                             context,
+//                                             value: controller
+//                                                     .selectedColor.value.isEmpty
+//                                                 ? null
+//                                                 : controller
+//                                                     .selectedColor.value,
+//                                             hint: "Select vehicle color".tr,
+//                                             items: controller.carColorList
+//                                                 .map((item) =>
+//                                                     DropdownMenuItem<String>(
+//                                                       value: item,
+//                                                       child:
+//                                                           Text(item.toString()),
+//                                                     ))
+//                                                 .toList(),
+//                                             onChanged: (value) => controller
+//                                                 .selectedColor
+//                                                 .value = value ?? "",
+//                                           ),
+//                                         ),
+//                                         const SizedBox(height: 14),
+//                                         _sectionLabel("Seats"),
+//                                         const SizedBox(height: 10),
+//                                         AbsorbPointer(
+//                                           absorbing: controller
+//                                                   .driverModel.value.ownerId !=
+//                                               null,
+//                                           child: _glassDropdown<String>(
+//                                             context,
+//                                             value: controller.seatsController
+//                                                     .value.text.isEmpty
+//                                                 ? null
+//                                                 : controller
+//                                                     .seatsController.value.text,
+//                                             hint: "How Many Seats".tr,
+//                                             items: controller.sheetList
+//                                                 .map((item) =>
+//                                                     DropdownMenuItem<String>(
+//                                                       value: item,
+//                                                       child:
+//                                                           Text(item.toString()),
+//                                                     ))
+//                                                 .toList(),
+//                                             onChanged: (value) => controller
+//                                                 .seatsController
+//                                                 .value
+//                                                 .text = value ?? "",
+//                                           ),
+//                                         ),
+//                                         const SizedBox(height: 14),
+//                                         _sectionLabel("Zone"),
+//                                         const SizedBox(height: 10),
+//                                         InkWell(
+//                                           onTap: () {
+//                                             if (controller.driverModel.value
+//                                                     .ownerId ==
+//                                                 null) {
+//                                               controller.selectedTempZone
+//                                                   .clear();
+//                                               controller.selectedTempZone
+//                                                   .addAll(
+//                                                       controller.selectedZone);
+//                                               zoneDialog(context, controller);
+//                                             }
+//                                           },
+//                                           borderRadius:
+//                                               BorderRadius.circular(16),
+//                                           child: AbsorbPointer(
+//                                             child: _glassTextField(
+//                                               context,
+//                                               hint: "Select Zone".tr,
+//                                               controller: controller
+//                                                   .zoneNameController.value,
+//                                               enabled: false,
+//                                               suffixIcon: Icons
+//                                                   .keyboard_arrow_down_rounded,
+//                                             ),
+//                                           ),
+//                                         ),
+//                                         const SizedBox(height: 14),
+//                                         if (controller
+//                                             .selectedPrices.isNotEmpty)
+//                                           Obx(
+//                                             () => Container(
+//                                               decoration: BoxDecoration(
+//                                                 borderRadius:
+//                                                     BorderRadius.circular(16),
+//                                                 color: AppColors.qlypCharcoal
+//                                                     .withOpacity(0.35),
+//                                                 border: Border.all(
+//                                                   color: AppColors
+//                                                       .qlypPrimaryFreshGreen
+//                                                       .withOpacity(0.12),
+//                                                   width: 1,
+//                                                 ),
+//                                               ),
+//                                               width: Responsive.width(
+//                                                   100, context),
+//                                               child: DefaultTabController(
+//                                                 length: controller
+//                                                     .selectedPrices.length,
+//                                                 child: Column(
+//                                                   crossAxisAlignment:
+//                                                       CrossAxisAlignment.start,
+//                                                   children: [
+//                                                     TabBar(
+//                                                       onTap: (value) {
+//                                                         controller.tabBarheight
+//                                                             .value = controller
+//                                                                     .selectedPrices[
+//                                                                         value]
+//                                                                     .isAcNonAc ==
+//                                                                 true
+//                                                             ? 200
+//                                                             : 100;
+//                                                         controller.update();
+//                                                       },
+//                                                       indicatorColor: AppColors
+//                                                           .qlypSecondaryWarmSand,
+//                                                       padding: const EdgeInsets
+//                                                           .symmetric(
+//                                                           horizontal: 8),
+//                                                       isScrollable: true,
+//                                                       labelColor: AppColors
+//                                                           .qlypSecondaryWarmSand,
+//                                                       unselectedLabelColor:
+//                                                           AppColors
+//                                                               .qlypPrimaryFreshGreen
+//                                                               .withOpacity(
+//                                                                   0.55),
+//                                                       labelStyle:
+//                                                           GoogleFonts.poppins(
+//                                                               fontSize: 13,
+//                                                               fontWeight:
+//                                                                   FontWeight
+//                                                                       .w600),
+//                                                       tabs: controller
+//                                                           .selectedPrices
+//                                                           .map((price) {
+//                                                         final zoneName = Constant
+//                                                             .localizationName(
+//                                                           controller.zoneAllList
+//                                                               .firstWhere(
+//                                                                 (zone) =>
+//                                                                     zone.id ==
+//                                                                     price
+//                                                                         .zoneId,
+//                                                                 orElse: () =>
+//                                                                     ZoneModel(),
+//                                                               )
+//                                                               .name,
+//                                                         );
+//                                                         return Tab(
+//                                                             text: zoneName);
+//                                                       }).toList(),
+//                                                     ),
+//                                                     SizedBox(
+//                                                       height: controller
+//                                                           .tabBarheight.value,
+//                                                       child: TabBarView(
+//                                                         physics:
+//                                                             const NeverScrollableScrollPhysics(),
+//                                                         children: controller
+//                                                             .selectedPrices
+//                                                             .map((price) {
+//                                                           int index = controller
+//                                                               .selectedPrices
+//                                                               .indexOf(price);
+//
+//                                                           if (price.isAcNonAc ==
+//                                                               true) {
+//                                                             return Padding(
+//                                                               padding:
+//                                                                   const EdgeInsets
+//                                                                       .fromLTRB(
+//                                                                       12,
+//                                                                       10,
+//                                                                       12,
+//                                                                       12),
+//                                                               child:
+//                                                                   SingleChildScrollView(
+//                                                                 child: Column(
+//                                                                   crossAxisAlignment:
+//                                                                       CrossAxisAlignment
+//                                                                           .start,
+//                                                                   children: [
+//                                                                     _miniLabel(
+//                                                                         "A/C Per ${Constant.distanceType} Rate"),
+//                                                                     const SizedBox(
+//                                                                         height:
+//                                                                             8),
+//                                                                     _glassTextField(
+//                                                                       context,
+//                                                                       hint: 'A/C Per ${Constant.distanceType} Rate'
+//                                                                           .tr,
+//                                                                       enabled: controller
+//                                                                               .driverModel
+//                                                                               .value
+//                                                                               .ownerId ==
+//                                                                           null,
+//                                                                       keyboardType: const TextInputType
+//                                                                           .numberWithOptions(
+//                                                                           decimal:
+//                                                                               true),
+//                                                                       controller:
+//                                                                           controller
+//                                                                               .acPerKmRate[index],
+//                                                                       prefixText: Constant
+//                                                                           .currencyModel!
+//                                                                           .symbol
+//                                                                           .toString(),
+//                                                                     ),
+//                                                                     const SizedBox(
+//                                                                         height:
+//                                                                             14),
+//                                                                     _miniLabel(
+//                                                                         "Non A/C Per ${Constant.distanceType} Rate"),
+//                                                                     const SizedBox(
+//                                                                         height:
+//                                                                             8),
+//                                                                     _glassTextField(
+//                                                                       context,
+//                                                                       hint: 'Non A/C Per ${Constant.distanceType} Rate'
+//                                                                           .tr,
+//                                                                       enabled: controller
+//                                                                               .driverModel
+//                                                                               .value
+//                                                                               .ownerId ==
+//                                                                           null,
+//                                                                       keyboardType: const TextInputType
+//                                                                           .numberWithOptions(
+//                                                                           decimal:
+//                                                                               true),
+//                                                                       controller:
+//                                                                           controller
+//                                                                               .nonAcPerKmRate[index],
+//                                                                       prefixText: Constant
+//                                                                           .currencyModel!
+//                                                                           .symbol
+//                                                                           .toString(),
+//                                                                     ),
+//                                                                   ],
+//                                                                 ),
+//                                                               ),
+//                                                             );
+//                                                           } else {
+//                                                             return Padding(
+//                                                               padding:
+//                                                                   const EdgeInsets
+//                                                                       .fromLTRB(
+//                                                                       12,
+//                                                                       10,
+//                                                                       12,
+//                                                                       12),
+//                                                               child:
+//                                                                   SingleChildScrollView(
+//                                                                 child: Column(
+//                                                                   crossAxisAlignment:
+//                                                                       CrossAxisAlignment
+//                                                                           .start,
+//                                                                   children: [
+//                                                                     _miniLabel(
+//                                                                         "Per ${Constant.distanceType} Rate"),
+//                                                                     const SizedBox(
+//                                                                         height:
+//                                                                             8),
+//                                                                     _glassTextField(
+//                                                                       context,
+//                                                                       hint: 'Per ${Constant.distanceType} Rate'
+//                                                                           .tr,
+//                                                                       enabled: controller
+//                                                                               .driverModel
+//                                                                               .value
+//                                                                               .ownerId ==
+//                                                                           null,
+//                                                                       keyboardType: const TextInputType
+//                                                                           .numberWithOptions(
+//                                                                           decimal:
+//                                                                               true),
+//                                                                       controller:
+//                                                                           controller
+//                                                                               .acNonAcWithoutPerKmRate[index],
+//                                                                       prefixText: Constant
+//                                                                           .currencyModel!
+//                                                                           .symbol
+//                                                                           .toString(),
+//                                                                     ),
+//                                                                   ],
+//                                                                 ),
+//                                                               ),
+//                                                             );
+//                                                           }
+//                                                         }).toList(),
+//                                                       ),
+//                                                     ),
+//                                                   ],
+//                                                 ),
+//                                               ),
+//                                             ),
+//                                           ),
+//                                         const SizedBox(height: 18),
+//                                         Text(
+//                                           "Select Your Rules".tr,
+//                                           style: GoogleFonts.poppins(
+//                                             fontWeight: FontWeight.w700,
+//                                             fontSize: 16,
+//                                             color:
+//                                                 AppColors.qlypPrimaryFreshGreen,
+//                                           ),
+//                                         ),
+//                                         const SizedBox(height: 6),
+//                                         ListBody(
+//                                           children: controller.driverRulesList
+//                                               .map(
+//                                                 (item) => CheckboxListTile(
+//                                                   contentPadding:
+//                                                       EdgeInsets.zero,
+//                                                   dense: true,
+//                                                   activeColor: AppColors
+//                                                       .qlypSecondaryWarmSand,
+//                                                   checkColor:
+//                                                       AppColors.qlypCharcoal,
+//                                                   value: controller
+//                                                               .selectedDriverRulesList
+//                                                               .indexWhere((e) =>
+//                                                                   e.id ==
+//                                                                   item.id) ==
+//                                                           -1
+//                                                       ? false
+//                                                       : true,
+//                                                   title: Text(
+//                                                     Constant.localizationName(
+//                                                         item.name),
+//                                                     style: GoogleFonts.poppins(
+//                                                       fontWeight:
+//                                                           FontWeight.w400,
+//                                                       color: AppColors
+//                                                           .qlypPrimaryFreshGreen
+//                                                           .withOpacity(0.85),
+//                                                     ),
+//                                                   ),
+//                                                   enabled: controller
+//                                                           .driverModel
+//                                                           .value
+//                                                           .ownerId ==
+//                                                       null,
+//                                                   onChanged: (value) {
+//                                                     if (value == true) {
+//                                                       controller
+//                                                           .selectedDriverRulesList
+//                                                           .add(item);
+//                                                     } else {
+//                                                       controller
+//                                                           .selectedDriverRulesList
+//                                                           .removeAt(
+//                                                         controller
+//                                                             .selectedDriverRulesList
+//                                                             .indexWhere((e) =>
+//                                                                 e.id ==
+//                                                                 item.id),
+//                                                       );
+//                                                     }
+//                                                   },
+//                                                 ),
+//                                               )
+//                                               .toList(),
+//                                         ),
+//                                         const SizedBox(height: 14),
+//                                         if (controller
+//                                                 .driverModel.value.ownerId ==
+//                                             null) ...[
+//                                           // ✅ QLYP-style primary button (gradient + glow)
+//                                           SizedBox(
+//                                             width: double.infinity,
+//                                             height: 58,
+//                                             child: Material(
+//                                               color: Colors.transparent,
+//                                               borderRadius:
+//                                                   BorderRadius.circular(18),
+//                                               child: InkWell(
+//                                                 borderRadius:
+//                                                     BorderRadius.circular(18),
+//                                                 onTap: () async {
+//                                                   controller.validateAndSave();
+//                                                 },
+//                                                 child: Container(
+//                                                   decoration: BoxDecoration(
+//                                                     borderRadius:
+//                                                         BorderRadius.circular(
+//                                                             18),
+//                                                     gradient: LinearGradient(
+//                                                       begin:
+//                                                           Alignment.centerLeft,
+//                                                       end:
+//                                                           Alignment.centerRight,
+//                                                       colors: [
+//                                                         AppColors
+//                                                             .qlypSecondaryWarmSand,
+//                                                         AppColors
+//                                                             .qlypPrimarySunYellow,
+//                                                       ],
+//                                                     ),
+//                                                     boxShadow: [
+//                                                       BoxShadow(
+//                                                         color: AppColors
+//                                                             .qlypPrimarySunYellow
+//                                                             .withOpacity(0.35),
+//                                                         blurRadius: 20,
+//                                                         offset:
+//                                                             const Offset(0, 8),
+//                                                       ),
+//                                                       BoxShadow(
+//                                                         color: AppColors
+//                                                             .qlypSecondaryWarmSand
+//                                                             .withOpacity(0.25),
+//                                                         blurRadius: 10,
+//                                                         offset:
+//                                                             const Offset(0, 4),
+//                                                       ),
+//                                                     ],
+//                                                   ),
+//                                                   child: Center(
+//                                                     child: Row(
+//                                                       mainAxisAlignment:
+//                                                           MainAxisAlignment
+//                                                               .center,
+//                                                       children: [
+//                                                         Text(
+//                                                           "Save".tr,
+//                                                           style: GoogleFonts
+//                                                               .poppins(
+//                                                             fontSize: 16,
+//                                                             fontWeight:
+//                                                                 FontWeight.w800,
+//                                                             color: AppColors
+//                                                                 .qlypCharcoal,
+//                                                             letterSpacing: -0.2,
+//                                                           ),
+//                                                         ),
+//                                                         const SizedBox(
+//                                                             width: 10),
+//                                                         Icon(
+//                                                           Icons
+//                                                               .check_circle_rounded,
+//                                                           color: AppColors
+//                                                               .qlypCharcoal,
+//                                                         ),
+//                                                       ],
+//                                                     ),
+//                                                   ),
+//                                                 ),
+//                                               ),
+//                                             ),
+//                                           ),
+//                                           const SizedBox(height: 12),
+//                                           Text(
+//                                             "You can not change once you select one service type if you want to change please contact to administrator",
+//                                             textAlign: TextAlign.center,
+//                                             style: GoogleFonts.poppins(
+//                                               fontSize: 12.5,
+//                                               color: AppColors
+//                                                   .qlypPrimaryFreshGreen
+//                                                   .withOpacity(0.65),
+//                                             ),
+//                                           ),
+//                                         ],
+//                                         const SizedBox(height: 6),
+//                                       ],
+//                                     ),
+//                                   ),
+//                                 ),
+//                               ),
+//
+//                               const SizedBox(height: 24),
+//                             ],
+//                           ),
+//                         ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
+//
+//   // -------------------- UI helpers (QLYP style) --------------------
+//
+//   static Widget _dot(Color color, double size) => Container(
+//         width: size,
+//         height: size,
+//         decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+//       );
+//
+//   static Widget _sectionLabel(String text) => Text(
+//         text.tr,
+//         style: GoogleFonts.poppins(
+//           fontSize: 14,
+//           fontWeight: FontWeight.w600,
+//           color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.9),
+//           letterSpacing: -0.2,
+//         ),
+//       );
+//
+//   static Widget _miniLabel(String text) => Text(
+//         text.tr,
+//         style: GoogleFonts.poppins(
+//           fontSize: 13,
+//           fontWeight: FontWeight.w600,
+//           color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.85),
+//         ),
+//       );
+//
+//   static Widget _glassTextField(
+//     BuildContext context, {
+//     required String hint,
+//     required TextEditingController controller,
+//     required bool enabled,
+//     TextInputType? keyboardType,
+//     IconData? suffixIcon,
+//     String? prefixText,
+//   }) {
+//     return Container(
+//       height: 58,
+//       decoration: BoxDecoration(
+//         borderRadius: BorderRadius.circular(16),
+//         border: Border.all(
+//           color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.15),
+//           width: 1.5,
+//         ),
+//         color: AppColors.qlypCharcoal.withOpacity(0.60),
+//       ),
+//       padding: const EdgeInsets.symmetric(horizontal: 14),
+//       child: Row(
+//         children: [
+//           if (prefixText != null) ...[
+//             Text(
+//               prefixText,
+//               style: GoogleFonts.poppins(
+//                 fontSize: 14,
+//                 fontWeight: FontWeight.w700,
+//                 color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.85),
+//               ),
+//             ),
+//             const SizedBox(width: 10),
+//             Container(
+//               width: 1,
+//               height: 22,
+//               color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.12),
+//             ),
+//             const SizedBox(width: 12),
+//           ],
+//           Expanded(
+//             child: TextFormField(
+//               controller: controller,
+//               enabled: enabled,
+//               keyboardType: keyboardType,
+//               cursorColor: AppColors.qlypSecondaryWarmSand,
+//               style: GoogleFonts.poppins(
+//                 color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.95),
+//                 fontSize: 14,
+//                 fontWeight: FontWeight.w500,
+//               ),
+//               decoration: InputDecoration(
+//                 border: InputBorder.none,
+//                 hintText: hint,
+//                 hintStyle: GoogleFonts.poppins(
+//                   color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.40),
+//                   fontSize: 14,
+//                   fontWeight: FontWeight.w400,
+//                 ),
+//               ),
+//             ),
+//           ),
+//           if (suffixIcon != null) ...[
+//             const SizedBox(width: 8),
+//             Icon(
+//               suffixIcon,
+//               color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.55),
+//               size: 20,
+//             ),
+//           ],
+//         ],
+//       ),
+//     );
+//   }
+//
+//   static Widget _glassDropdown<T>(
+//     BuildContext context, {
+//     required T? value,
+//     required String hint,
+//     required List<DropdownMenuItem<T>> items,
+//     required ValueChanged<T?> onChanged,
+//   }) {
+//     return Container(
+//       height: 58,
+//       decoration: BoxDecoration(
+//         borderRadius: BorderRadius.circular(16),
+//         border: Border.all(
+//           color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.15),
+//           width: 1.5,
+//         ),
+//         color: AppColors.qlypCharcoal.withOpacity(0.60),
+//       ),
+//       padding: const EdgeInsets.symmetric(horizontal: 14),
+//       child: DropdownButtonFormField<T>(
+//         value: value,
+//         items: items,
+//         onChanged: onChanged,
+//         decoration: const InputDecoration(border: InputBorder.none),
+//         dropdownColor: AppColors.qlypCharcoal,
+//         icon: Icon(
+//           Icons.keyboard_arrow_down_rounded,
+//           color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.7),
+//         ),
+//         style: GoogleFonts.poppins(
+//           color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.95),
+//           fontSize: 14,
+//           fontWeight: FontWeight.w500,
+//         ),
+//         hint: Text(
+//           hint,
+//           style: GoogleFonts.poppins(
+//             color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.40),
+//             fontSize: 14,
+//             fontWeight: FontWeight.w400,
+//           ),
+//         ),
+//         validator: (v) => v == null ? 'field required' : null,
+//       ),
+//     );
+//   }
+//
+//   // -------------------- dialog (logic unchanged, UI styled) --------------------
+//
+//   void zoneDialog(
+//       BuildContext context, VehicleInformationController controller) {
+//     showDialog(
+//       context: context,
+//       builder: (BuildContext context) {
+//         return AlertDialog(
+//           backgroundColor: AppColors.qlypCharcoal.withOpacity(0.98),
+//           shape:
+//               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+//           title: Text(
+//             'Zone list'.tr,
+//             style: GoogleFonts.poppins(
+//               fontWeight: FontWeight.w700,
+//               color: AppColors.qlypPrimaryFreshGreen,
+//             ),
+//           ),
+//           content: SizedBox(
+//             width: Responsive.width(90, context),
+//             child: controller.zoneList.isEmpty
+//                 ? const SizedBox.shrink()
+//                 : Obx(
+//                     () => ListView.builder(
+//                       shrinkWrap: true,
+//                       itemCount: controller.zoneList.length,
+//                       itemBuilder: (BuildContext context, int index) {
+//                         return Obx(
+//                           () => CheckboxListTile(
+//                             contentPadding: EdgeInsets.zero,
+//                             activeColor: AppColors.qlypSecondaryWarmSand,
+//                             checkColor: AppColors.qlypCharcoal,
+//                             value: controller.selectedTempZone
+//                                 .contains(controller.zoneList[index].id),
+//                             onChanged: (value) {
+//                               if (controller.selectedTempZone
+//                                   .contains(controller.zoneList[index].id)) {
+//                                 controller.selectedTempZone
+//                                     .remove(controller.zoneList[index].id);
+//                               } else {
+//                                 controller.selectedTempZone
+//                                     .add(controller.zoneList[index].id);
+//                               }
+//                             },
+//                             title: Text(
+//                               Constant.localizationName(
+//                                   controller.zoneList[index].name),
+//                               style: GoogleFonts.poppins(
+//                                 color: AppColors.qlypPrimaryFreshGreen
+//                                     .withOpacity(0.85),
+//                                 fontWeight: FontWeight.w500,
+//                               ),
+//                             ),
+//                           ),
+//                         );
+//                       },
+//                     ),
+//                   ),
+//           ),
+//           actions: [
+//             TextButton(
+//               onPressed: () {
+//                 controller.selectedTempZone.value = controller.selectedZone;
+//                 Get.back();
+//               },
+//               child: Text(
+//                 "Cancel".tr,
+//                 style: GoogleFonts.poppins(
+//                   color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.75),
+//                   fontWeight: FontWeight.w600,
+//                 ),
+//               ),
+//             ),
+//             TextButton(
+//               onPressed: () {
+//                 controller.selectedZone.clear();
+//                 controller.selectedZone.addAll(controller.selectedTempZone);
+//
+//                 if (controller.selectedTempZone.isEmpty) {
+//                   ShowToastDialog.showToast("Please select zone".tr);
+//                 } else {
+//                   controller.selectedPrices.value = controller
+//                           .selectedServiceType.value.prices
+//                           ?.where((price) =>
+//                               controller.selectedZone.contains(price.zoneId))
+//                           .toList() ??
+//                       <Price>[];
+//
+//                   controller.acPerKmRate.value = List.generate(
+//                     controller.selectedPrices.length,
+//                     (index) => TextEditingController(),
+//                   );
+//                   controller.nonAcPerKmRate.value = List.generate(
+//                     controller.selectedPrices.length,
+//                     (index) => TextEditingController(),
+//                   );
+//                   controller.acNonAcWithoutPerKmRate.value = List.generate(
+//                     controller.selectedPrices.length,
+//                     (index) => TextEditingController(),
+//                   );
+//
+//                   final hasAcNonAc =
+//                       controller.selectedPrices.any((e) => e.isAcNonAc == true);
+//                   controller.tabBarheight.value = hasAcNonAc ? 200 : 100;
+//
+//                   String nameValue = "";
+//                   for (var element in controller.selectedZone) {
+//                     List<ZoneModel> list = controller.zoneList
+//                         .where((p0) => p0.id == element)
+//                         .toList();
+//                     if (list.isNotEmpty) {
+//                       nameValue =
+//                           "$nameValue${nameValue.isEmpty ? "" : ","} ${Constant.localizationName(list.first.name)}";
+//                     }
+//                   }
+//                   controller.zoneNameController.value.text = nameValue;
+//                   controller.update();
+//                   Get.back();
+//                 }
+//               },
+//               child: Text(
+//                 "Continue".tr,
+//                 style: GoogleFonts.poppins(
+//                   color: AppColors.qlypSecondaryWarmSand,
+//                   fontWeight: FontWeight.w700,
+//                 ),
+//               ),
+//             ),
+//           ],
+//         );
+//       },
+//     );
+//   }
+// }
 
 /*
 import 'package:cached_network_image/cached_network_image.dart';

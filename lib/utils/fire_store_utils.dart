@@ -34,6 +34,8 @@ import 'package:driver/model/user_model.dart';
 import 'package:driver/model/wallet_transaction_model.dart';
 import 'package:driver/model/withdraw_model.dart';
 import 'package:driver/model/zone_model.dart';
+import 'package:driver/model/main_service_model.dart';
+import 'package:driver/model/vehicle_type_model.dart';
 import 'package:driver/themes/app_colors.dart';
 import 'package:driver/widget/geoflutterfire/src/geoflutterfire.dart';
 import 'package:driver/widget/geoflutterfire/src/models/point.dart';
@@ -54,54 +56,85 @@ class FireStoreUtils {
   }
 
   Future<void> getGoogleAPIKey() async {
-    await fireStore.collection(CollectionName.settings).doc("globalKey").get().then((value) {
+    await fireStore
+        .collection(CollectionName.settings)
+        .doc("globalKey")
+        .get()
+        .then((value) {
       if (value.exists) {
         Constant.mapAPIKey = value.data()!["googleMapKey"];
       }
     });
 
-    await fireStore.collection(CollectionName.settings).doc("globalValue").get().then((value) {
+    await fireStore
+        .collection(CollectionName.settings)
+        .doc("globalValue")
+        .get()
+        .then((value) {
       if (value.exists) {
-        AppColors.lightsecondprimary = Color(int.parse(value.data()?['app_driver_light_color'].replaceFirst("#", "0xff")));
-        AppColors.darksecondprimary = Color(int.parse(value.data()?['app_driver_color'].replaceFirst("#", "0xff")));
+        AppColors.lightsecondprimary = Color(int.parse(
+            value.data()?['app_driver_light_color'].replaceFirst("#", "0xff")));
+        AppColors.darksecondprimary = Color(int.parse(
+            value.data()?['app_driver_color'].replaceFirst("#", "0xff")));
         Constant.distanceType = value.data()!["distanceType"];
         Constant.radius = value.data()!["radius"];
-        Constant.minimumAmountToWithdrawal = value.data()!["minimumAmountToWithdrawal"];
-        Constant.minimumDepositToRideAccept = value.data()!["minimumDepositToRideAccept"];
+        Constant.minimumAmountToWithdrawal =
+            value.data()!["minimumAmountToWithdrawal"];
+        Constant.minimumDepositToRideAccept =
+            value.data()!["minimumDepositToRideAccept"];
         Constant.mapType = value.data()!["mapType"];
         Constant.selectedMapType = value.data()!["selectedMapType"];
         Constant.driverLocationUpdate = value.data()!["driverLocationUpdate"];
         Constant.isVerifyDocument = value.data()!["isVerifyDocument"];
-        Constant.isSubscriptionModelApplied = value.data()!["subscription_model"];
+        Constant.isSubscriptionModelApplied =
+            value.data()!["subscription_model"];
         Constant.regionCode = value.data()!["regionCode"];
         Constant.regionCountry = value.data()!["regionCountry"];
       }
     });
 
-    await fireStore.collection(CollectionName.settings).doc("notification_setting").get().then((value) {
+    await fireStore
+        .collection(CollectionName.settings)
+        .doc("notification_setting")
+        .get()
+        .then((value) {
       if (value.exists) {
         if (value.data() != null) {
           Constant.senderId = value.data()!['senderId'].toString();
-          Constant.jsonNotificationFileURL = value.data()!['serviceJson'].toString();
+          Constant.jsonNotificationFileURL =
+              value.data()!['serviceJson'].toString();
         }
       }
     });
 
-    await fireStore.collection(CollectionName.settings).doc("adminCommission").get().then((value) {
+    await fireStore
+        .collection(CollectionName.settings)
+        .doc("adminCommission")
+        .get()
+        .then((value) {
       if (value.data() != null) {
-        AdminCommission adminCommission = AdminCommission.fromJson(value.data()!);
+        AdminCommission adminCommission =
+            AdminCommission.fromJson(value.data()!);
         Constant.adminCommission = adminCommission;
       }
     });
 
-    await fireStore.collection(CollectionName.settings).doc("referral").get().then((value) {
+    await fireStore
+        .collection(CollectionName.settings)
+        .doc("referral")
+        .get()
+        .then((value) {
       if (value.exists) {
         Constant.referralCustomerAmount = value.data()!["referralAmount"];
         Constant.referralDriverAmount = value.data()!["referralAmountDriver"];
       }
     });
 
-    await fireStore.collection(CollectionName.settings).doc("global").get().then((value) {
+    await fireStore
+        .collection(CollectionName.settings)
+        .doc("global")
+        .get()
+        .then((value) {
       if (value.exists) {
         if (value.data()!["privacyPolicy"] != null) {
           Constant.privacyPolicy = <LanguagePrivacyPolicy>[];
@@ -121,7 +154,11 @@ class FireStoreUtils {
       }
     });
 
-    await fireStore.collection(CollectionName.settings).doc("contact_us").get().then((value) {
+    await fireStore
+        .collection(CollectionName.settings)
+        .doc("contact_us")
+        .get()
+        .then((value) {
       if (value.exists) {
         Constant.supportURL = value.data()!["supportURL"];
       }
@@ -134,7 +171,11 @@ class FireStoreUtils {
 
   static Future<DriverUserModel?> getDriverProfile(String uuid) async {
     DriverUserModel? driverModel;
-    await fireStore.collection(CollectionName.driverUsers).doc(uuid).get().then((value) {
+    await fireStore
+        .collection(CollectionName.driverUsers)
+        .doc(uuid)
+        .get()
+        .then((value) {
       if (value.exists) {
         driverModel = DriverUserModel.fromJson(value.data()!);
       }
@@ -147,7 +188,11 @@ class FireStoreUtils {
 
   static Future<UserModel?> getCustomer(String uuid) async {
     UserModel? userModel;
-    await fireStore.collection(CollectionName.users).doc(uuid).get().then((value) {
+    await fireStore
+        .collection(CollectionName.users)
+        .doc(uuid)
+        .get()
+        .then((value) {
       if (value.exists) {
         userModel = UserModel.fromJson(value.data()!);
       }
@@ -161,7 +206,11 @@ class FireStoreUtils {
   static Future<bool> updateUser(UserModel userModel) async {
     bool isUpdate = false;
 
-    await fireStore.collection(CollectionName.users).doc(userModel.id).set(userModel.toJson()).whenComplete(() {
+    await fireStore
+        .collection(CollectionName.users)
+        .doc(userModel.id)
+        .set(userModel.toJson())
+        .whenComplete(() {
       isUpdate = true;
     }).catchError((error) {
       log("Failed to update user: $error");
@@ -170,12 +219,15 @@ class FireStoreUtils {
     return isUpdate;
   }
 
-  static Future<bool?> updatedCustomerWalletById({required double referralAmount, required String customerId}) async {
+  static Future<bool?> updatedCustomerWalletById(
+      {required double referralAmount, required String customerId}) async {
     bool isAdded = false;
     await getCustomer(customerId).then((value) async {
       if (value != null) {
         UserModel userModel = value;
-        userModel.walletAmount = (double.parse(userModel.walletAmount ?? '0.0') + referralAmount).toStringAsFixed(2);
+        userModel.walletAmount =
+            (double.parse(userModel.walletAmount ?? '0.0') + referralAmount)
+                .toStringAsFixed(2);
         await FireStoreUtils.updateCustomer(userModel).then((value) {
           isAdded = value;
         });
@@ -184,12 +236,15 @@ class FireStoreUtils {
     return isAdded;
   }
 
-  static Future<bool?> updatedDriverWalletById({required double referralAmount, required String driverId}) async {
+  static Future<bool?> updatedDriverWalletById(
+      {required double referralAmount, required String driverId}) async {
     bool isAdded = false;
     await getDriverProfile(driverId).then((value) async {
       if (value != null) {
         DriverUserModel userModel = value;
-        userModel.walletAmount = (double.parse(userModel.walletAmount ?? '0.0') + referralAmount).toStringAsFixed(2);
+        userModel.walletAmount =
+            (double.parse(userModel.walletAmount ?? '0.0') + referralAmount)
+                .toStringAsFixed(2);
         await FireStoreUtils.updateDriverUser(userModel).then((value) {
           isAdded = value;
         });
@@ -200,7 +255,11 @@ class FireStoreUtils {
 
   Future<PaymentModel?> getPayment() async {
     PaymentModel? paymentModel;
-    await fireStore.collection(CollectionName.settings).doc("payment").get().then((value) {
+    await fireStore
+        .collection(CollectionName.settings)
+        .doc("payment")
+        .get()
+        .then((value) {
       paymentModel = PaymentModel.fromJson(value.data()!);
     });
     return paymentModel;
@@ -208,7 +267,11 @@ class FireStoreUtils {
 
   Future<CurrencyModel?> getCurrency() async {
     CurrencyModel? currencyModel;
-    await fireStore.collection(CollectionName.currency).where("enable", isEqualTo: true).get().then((value) {
+    await fireStore
+        .collection(CollectionName.currency)
+        .where("enable", isEqualTo: true)
+        .get()
+        .then((value) {
       if (value.docs.isNotEmpty) {
         currencyModel = CurrencyModel.fromJson(value.docs.first.data());
       }
@@ -218,7 +281,11 @@ class FireStoreUtils {
 
   static Future<bool> updateDriverUser(DriverUserModel userModel) async {
     bool isUpdate = false;
-    await fireStore.collection(CollectionName.driverUsers).doc(userModel.id).set(userModel.toJson()).whenComplete(() {
+    await fireStore
+        .collection(CollectionName.driverUsers)
+        .doc(userModel.id)
+        .set(userModel.toJson())
+        .whenComplete(() {
       isUpdate = true;
     }).catchError((error) {
       log("Failed to update user: $error");
@@ -229,7 +296,11 @@ class FireStoreUtils {
 
   static Future<bool> updateCustomer(UserModel userModel) async {
     bool isUpdate = false;
-    await fireStore.collection(CollectionName.users).doc(userModel.id).set(userModel.toJson()).whenComplete(() {
+    await fireStore
+        .collection(CollectionName.users)
+        .doc(userModel.id)
+        .set(userModel.toJson())
+        .whenComplete(() {
       isUpdate = true;
     }).catchError((error) {
       log("Failed to update user: $error");
@@ -238,9 +309,16 @@ class FireStoreUtils {
     return isUpdate;
   }
 
-  static Future<DriverIdAcceptReject?> getAcceptedOrders(String orderId, String driverId) async {
+  static Future<DriverIdAcceptReject?> getAcceptedOrders(
+      String orderId, String driverId) async {
     DriverIdAcceptReject? driverIdAcceptReject;
-    await fireStore.collection(CollectionName.orders).doc(orderId).collection("acceptedDriver").doc(driverId).get().then((value) async {
+    await fireStore
+        .collection(CollectionName.orders)
+        .doc(orderId)
+        .collection("acceptedDriver")
+        .doc(driverId)
+        .get()
+        .then((value) async {
       if (value.exists) {
         driverIdAcceptReject = DriverIdAcceptReject.fromJson(value.data()!);
       }
@@ -251,9 +329,16 @@ class FireStoreUtils {
     return driverIdAcceptReject;
   }
 
-  static Future<DriverIdAcceptReject?> getInterCItyAcceptedOrders(String orderId, String driverId) async {
+  static Future<DriverIdAcceptReject?> getInterCItyAcceptedOrders(
+      String orderId, String driverId) async {
     DriverIdAcceptReject? driverIdAcceptReject;
-    await fireStore.collection(CollectionName.ordersIntercity).doc(orderId).collection("acceptedDriver").doc(driverId).get().then((value) async {
+    await fireStore
+        .collection(CollectionName.ordersIntercity)
+        .doc(orderId)
+        .collection("acceptedDriver")
+        .doc(driverId)
+        .get()
+        .then((value) async {
       if (value.exists) {
         driverIdAcceptReject = DriverIdAcceptReject.fromJson(value.data()!);
       }
@@ -285,7 +370,11 @@ class FireStoreUtils {
   static Future<String> userExitCustomerOrDriverRole(String uid) async {
     String role = '';
     try {
-      await fireStore.collection(CollectionName.users).doc(uid).get().then((value) {
+      await fireStore
+          .collection(CollectionName.users)
+          .doc(uid)
+          .get()
+          .then((value) {
         if (value.exists) {
           role = Constant.customerType!;
         } else {
@@ -293,7 +382,11 @@ class FireStoreUtils {
         }
       });
       if (role == '') {
-        await fireStore.collection(CollectionName.driverUsers).doc(uid).get().then((value) {
+        await fireStore
+            .collection(CollectionName.driverUsers)
+            .doc(uid)
+            .get()
+            .then((value) {
           if (value.exists) {
             role = Constant.currentUserType!;
           } else {
@@ -302,7 +395,11 @@ class FireStoreUtils {
         });
       }
       if (role == '') {
-        await fireStore.collection(CollectionName.ownerUsers).doc(uid).get().then((value) {
+        await fireStore
+            .collection(CollectionName.ownerUsers)
+            .doc(uid)
+            .get()
+            .then((value) {
           if (value.exists) {
             role = Constant.ownerType;
           } else {
@@ -318,7 +415,13 @@ class FireStoreUtils {
 
   static Future<List<DocumentModel>> getDocumentList() async {
     List<DocumentModel> documentList = [];
-    await fireStore.collection(CollectionName.documents).where('enable', isEqualTo: true).where('type', isEqualTo: Constant.currentUserType).where('isDeleted', isEqualTo: false).get().then((value) {
+    await fireStore
+        .collection(CollectionName.documents)
+        .where('enable', isEqualTo: true)
+        .where('type', isEqualTo: Constant.currentUserType)
+        .where('isDeleted', isEqualTo: false)
+        .get()
+        .then((value) {
       for (var element in value.docs) {
         DocumentModel documentModel = DocumentModel.fromJson(element.data());
         documentList.add(documentModel);
@@ -331,7 +434,11 @@ class FireStoreUtils {
 
   static Future<List<ServiceModel>> getService() async {
     List<ServiceModel> serviceList = [];
-    await fireStore.collection(CollectionName.service).where('enable', isEqualTo: true).get().then((value) {
+    await fireStore
+        .collection(CollectionName.service)
+        .where('enable', isEqualTo: true)
+        .get()
+        .then((value) {
       for (var element in value.docs) {
         ServiceModel documentModel = ServiceModel.fromJson(element.data());
         serviceList.add(documentModel);
@@ -342,9 +449,64 @@ class FireStoreUtils {
     return serviceList;
   }
 
+  static Future<List<MainServiceModel>> getMainServices() async {
+    List<MainServiceModel> list = [];
+    await fireStore.collection("main_services").get().then((value) {
+      for (var element in value.docs) {
+        MainServiceModel model = MainServiceModel.fromJson(element.data());
+        list.add(model);
+      }
+    }).catchError((error) {
+      log(error.toString());
+    });
+    return list;
+  }
+
+  static Future<List<ServiceModel>> getServiceByMainServiceId(
+      String mainServiceId) async {
+    List<ServiceModel> list = [];
+    await fireStore
+        .collection(CollectionName.service)
+        .where("mainServiceID", isEqualTo: mainServiceId)
+        .where('enable', isEqualTo: true)
+        .get()
+        .then((value) {
+      for (var element in value.docs) {
+        ServiceModel model = ServiceModel.fromJson(element.data());
+        list.add(model);
+      }
+    }).catchError((error) {
+      log(error.toString());
+    });
+    return list;
+  }
+
+  static Future<List<VehicleTypeModel>> getVehicleTypeByServiceId(
+      String serviceId) async {
+    List<VehicleTypeModel> list = [];
+    await fireStore
+        .collection("vehicle_type")
+        .where("serviceID", isEqualTo: serviceId)
+        .where("enable", isEqualTo: true)
+        .get()
+        .then((value) {
+      for (var element in value.docs) {
+        VehicleTypeModel model = VehicleTypeModel.fromJson(element.data());
+        list.add(model);
+      }
+    }).catchError((error) {
+      log(error.toString());
+    });
+    return list;
+  }
+
   static Future<DriverDocumentModel?> getDocumentOfDriver() async {
     DriverDocumentModel? driverDocumentModel;
-    await fireStore.collection(CollectionName.driverDocument).doc(getCurrentUid()).get().then((value) async {
+    await fireStore
+        .collection(CollectionName.driverDocument)
+        .doc(getCurrentUid())
+        .get()
+        .then((value) async {
       if (value.exists) {
         driverDocumentModel = DriverDocumentModel.fromJson(value.data()!);
       }
@@ -356,18 +518,25 @@ class FireStoreUtils {
     bool isAdded = false;
     DriverDocumentModel driverDocumentModel = DriverDocumentModel();
     List<Documents> documentsList = [];
-    await fireStore.collection(CollectionName.driverDocument).doc(getCurrentUid()).get().then((value) async {
+    await fireStore
+        .collection(CollectionName.driverDocument)
+        .doc(getCurrentUid())
+        .get()
+        .then((value) async {
       if (value.exists) {
-        DriverDocumentModel newDriverDocumentModel = DriverDocumentModel.fromJson(value.data()!);
+        DriverDocumentModel newDriverDocumentModel =
+            DriverDocumentModel.fromJson(value.data()!);
         documentsList = newDriverDocumentModel.documents!;
-        var contain = newDriverDocumentModel.documents!.where((element) => element.documentId == documents.documentId);
+        var contain = newDriverDocumentModel.documents!
+            .where((element) => element.documentId == documents.documentId);
         if (contain.isEmpty) {
           documentsList.add(documents);
 
           driverDocumentModel.id = getCurrentUid();
           driverDocumentModel.documents = documentsList;
         } else {
-          var index = newDriverDocumentModel.documents!.indexWhere((element) => element.documentId == documents.documentId);
+          var index = newDriverDocumentModel.documents!.indexWhere(
+              (element) => element.documentId == documents.documentId);
 
           driverDocumentModel.id = getCurrentUid();
           documentsList.removeAt(index);
@@ -383,7 +552,11 @@ class FireStoreUtils {
       }
     });
 
-    await fireStore.collection(CollectionName.driverDocument).doc(getCurrentUid()).set(driverDocumentModel.toJson()).then((value) {
+    await fireStore
+        .collection(CollectionName.driverDocument)
+        .doc(getCurrentUid())
+        .set(driverDocumentModel.toJson())
+        .then((value) {
       isAdded = true;
     }).catchError((error) {
       isAdded = false;
@@ -395,9 +568,15 @@ class FireStoreUtils {
 
   static Future<List<DriverRulesModel>?> getDriverRules() async {
     List<DriverRulesModel> driverRulesModel = [];
-    await fireStore.collection(CollectionName.driverRules).where('enable', isEqualTo: true).where('isDeleted', isEqualTo: false).get().then((value) async {
+    await fireStore
+        .collection(CollectionName.driverRules)
+        .where('enable', isEqualTo: true)
+        .where('isDeleted', isEqualTo: false)
+        .get()
+        .then((value) async {
       for (var element in value.docs) {
-        DriverRulesModel vehicleModel = DriverRulesModel.fromJson(element.data());
+        DriverRulesModel vehicleModel =
+            DriverRulesModel.fromJson(element.data());
         driverRulesModel.add(vehicleModel);
       }
     });
@@ -406,24 +585,35 @@ class FireStoreUtils {
 
   StreamController<List<OrderModel>>? getNearestOrderRequestController;
 
-  Stream<List<OrderModel>> getOrders(DriverUserModel driverUserModel, double? latitude, double? longLatitude) async* {
-    getNearestOrderRequestController = StreamController<List<OrderModel>>.broadcast();
+  Stream<List<OrderModel>> getOrders(DriverUserModel driverUserModel,
+      double? latitude, double? longLatitude) async* {
+    getNearestOrderRequestController =
+        StreamController<List<OrderModel>>.broadcast();
     List<OrderModel> ordersList = [];
     Query<Map<String, dynamic>> query = fireStore
         .collection(CollectionName.orders)
         .where('serviceId', isEqualTo: driverUserModel.serviceId)
         .where('zoneId', whereIn: driverUserModel.zoneIds)
         .where('status', isEqualTo: Constant.ridePlaced);
-    GeoFirePoint center = Geoflutterfire().point(latitude: latitude ?? 0.0, longitude: longLatitude ?? 0.0);
-    Stream<List<DocumentSnapshot>> stream = Geoflutterfire().collection(collectionRef: query).within(center: center, radius: double.parse(Constant.radius), field: 'position', strictMode: true);
+    GeoFirePoint center = Geoflutterfire()
+        .point(latitude: latitude ?? 0.0, longitude: longLatitude ?? 0.0);
+    Stream<List<DocumentSnapshot>> stream = Geoflutterfire()
+        .collection(collectionRef: query)
+        .within(
+            center: center,
+            radius: double.parse(Constant.radius),
+            field: 'position',
+            strictMode: true);
 
     stream.listen((List<DocumentSnapshot> documentList) {
       ordersList.clear();
       for (var document in documentList) {
         final data = document.data() as Map<String, dynamic>;
         OrderModel orderModel = OrderModel.fromJson(data);
-        if (orderModel.acceptedDriverId != null && orderModel.acceptedDriverId!.isNotEmpty) {
-          if (!orderModel.acceptedDriverId!.contains(FireStoreUtils.getCurrentUid())) {
+        if (orderModel.acceptedDriverId != null &&
+            orderModel.acceptedDriverId!.isNotEmpty) {
+          if (!orderModel.acceptedDriverId!
+              .contains(FireStoreUtils.getCurrentUid())) {
             ordersList.add(orderModel);
           }
         } else {
@@ -436,23 +626,37 @@ class FireStoreUtils {
     yield* getNearestOrderRequestController!.stream;
   }
 
-  StreamController<List<InterCityOrderModel>>? getNearestFreightOrderRequestController;
+  StreamController<List<InterCityOrderModel>>?
+      getNearestFreightOrderRequestController;
 
-  Stream<List<InterCityOrderModel>> getFreightOrders(double? latitude, double? longLatitude) async* {
-    getNearestFreightOrderRequestController = StreamController<List<InterCityOrderModel>>.broadcast();
+  Stream<List<InterCityOrderModel>> getFreightOrders(
+      double? latitude, double? longLatitude) async* {
+    getNearestFreightOrderRequestController =
+        StreamController<List<InterCityOrderModel>>.broadcast();
     List<InterCityOrderModel> ordersList = [];
-    Query<Map<String, dynamic>> query =
-        fireStore.collection(CollectionName.ordersIntercity).where('intercityServiceId', isEqualTo: "Kn2VEnPI3ikF58uK8YqY").where('status', isEqualTo: Constant.ridePlaced);
-    GeoFirePoint center = Geoflutterfire().point(latitude: latitude ?? 0.0, longitude: longLatitude ?? 0.0);
-    Stream<List<DocumentSnapshot>> stream = Geoflutterfire().collection(collectionRef: query).within(center: center, radius: double.parse(Constant.radius), field: 'position', strictMode: true);
+    Query<Map<String, dynamic>> query = fireStore
+        .collection(CollectionName.ordersIntercity)
+        .where('intercityServiceId', isEqualTo: "Kn2VEnPI3ikF58uK8YqY")
+        .where('status', isEqualTo: Constant.ridePlaced);
+    GeoFirePoint center = Geoflutterfire()
+        .point(latitude: latitude ?? 0.0, longitude: longLatitude ?? 0.0);
+    Stream<List<DocumentSnapshot>> stream = Geoflutterfire()
+        .collection(collectionRef: query)
+        .within(
+            center: center,
+            radius: double.parse(Constant.radius),
+            field: 'position',
+            strictMode: true);
 
     stream.listen((List<DocumentSnapshot> documentList) {
       ordersList.clear();
       for (var document in documentList) {
         final data = document.data() as Map<String, dynamic>;
         InterCityOrderModel orderModel = InterCityOrderModel.fromJson(data);
-        if (orderModel.acceptedDriverId != null && orderModel.acceptedDriverId!.isNotEmpty) {
-          if (!orderModel.acceptedDriverId!.contains(FireStoreUtils.getCurrentUid())) {
+        if (orderModel.acceptedDriverId != null &&
+            orderModel.acceptedDriverId!.isNotEmpty) {
+          if (!orderModel.acceptedDriverId!
+              .contains(FireStoreUtils.getCurrentUid())) {
             ordersList.add(orderModel);
           }
         } else {
@@ -479,7 +683,11 @@ class FireStoreUtils {
 
   static Future<bool?> setOrder(OrderModel orderModel) async {
     bool isAdded = false;
-    await fireStore.collection(CollectionName.orders).doc(orderModel.id).set(orderModel.toJson()).then((value) {
+    await fireStore
+        .collection(CollectionName.orders)
+        .doc(orderModel.id)
+        .set(orderModel.toJson())
+        .then((value) {
       isAdded = true;
     }).catchError((error) {
       log("Failed to update user: $error");
@@ -490,7 +698,11 @@ class FireStoreUtils {
 
   static Future<bool?> bankDetailsIsAvailable() async {
     bool isAdded = false;
-    await fireStore.collection(CollectionName.bankDetails).doc(FireStoreUtils.getCurrentUid()).get().then((value) {
+    await fireStore
+        .collection(CollectionName.bankDetails)
+        .doc(FireStoreUtils.getCurrentUid())
+        .get()
+        .then((value) {
       if (value.exists) {
         isAdded = true;
       } else {
@@ -505,7 +717,11 @@ class FireStoreUtils {
 
   static Future<OrderModel?> getOrder(String orderId) async {
     OrderModel? orderModel;
-    await fireStore.collection(CollectionName.orders).doc(orderId).get().then((value) {
+    await fireStore
+        .collection(CollectionName.orders)
+        .doc(orderId)
+        .get()
+        .then((value) {
       if (value.data() != null) {
         orderModel = OrderModel.fromJson(value.data()!);
       }
@@ -515,7 +731,11 @@ class FireStoreUtils {
 
   static Future<InterCityOrderModel?> getInterCityOrder(String orderId) async {
     InterCityOrderModel? orderModel;
-    await fireStore.collection(CollectionName.ordersIntercity).doc(orderId).get().then((value) {
+    await fireStore
+        .collection(CollectionName.ordersIntercity)
+        .doc(orderId)
+        .get()
+        .then((value) {
       if (value.data() != null) {
         orderModel = InterCityOrderModel.fromJson(value.data()!);
       }
@@ -523,9 +743,16 @@ class FireStoreUtils {
     return orderModel;
   }
 
-  static Future<bool?> acceptRide(OrderModel orderModel, DriverIdAcceptReject driverIdAcceptReject) async {
+  static Future<bool?> acceptRide(
+      OrderModel orderModel, DriverIdAcceptReject driverIdAcceptReject) async {
     bool isAdded = false;
-    await fireStore.collection(CollectionName.orders).doc(orderModel.id).collection("acceptedDriver").doc(driverIdAcceptReject.driverId).set(driverIdAcceptReject.toJson()).then((value) {
+    await fireStore
+        .collection(CollectionName.orders)
+        .doc(orderModel.id)
+        .collection("acceptedDriver")
+        .doc(driverIdAcceptReject.driverId)
+        .set(driverIdAcceptReject.toJson())
+        .then((value) {
       isAdded = true;
     }).catchError((error) {
       log("Failed to update user: $error");
@@ -536,7 +763,11 @@ class FireStoreUtils {
 
   static Future<bool?> setReview(ReviewModel reviewModel) async {
     bool isAdded = false;
-    await fireStore.collection(CollectionName.reviewCustomer).doc(reviewModel.id).set(reviewModel.toJson()).then((value) {
+    await fireStore
+        .collection(CollectionName.reviewCustomer)
+        .doc(reviewModel.id)
+        .set(reviewModel.toJson())
+        .then((value) {
       isAdded = true;
     }).catchError((error) {
       log("Failed to update user: $error");
@@ -547,7 +778,11 @@ class FireStoreUtils {
 
   static Future<ReviewModel?> getReview(String orderId) async {
     ReviewModel? reviewModel;
-    await fireStore.collection(CollectionName.reviewCustomer).doc(orderId).get().then((value) {
+    await fireStore
+        .collection(CollectionName.reviewCustomer)
+        .doc(orderId)
+        .get()
+        .then((value) {
       if (value.data() != null) {
         reviewModel = ReviewModel.fromJson(value.data()!);
       }
@@ -557,7 +792,11 @@ class FireStoreUtils {
 
   static Future<bool?> setInterCityOrder(InterCityOrderModel orderModel) async {
     bool isAdded = false;
-    await fireStore.collection(CollectionName.ordersIntercity).doc(orderModel.id).set(orderModel.toJson()).then((value) {
+    await fireStore
+        .collection(CollectionName.ordersIntercity)
+        .doc(orderModel.id)
+        .set(orderModel.toJson())
+        .then((value) {
       isAdded = true;
     }).catchError((error) {
       log("Failed to update user: $error");
@@ -566,9 +805,16 @@ class FireStoreUtils {
     return isAdded;
   }
 
-  static Future<bool?> acceptInterCityRide(InterCityOrderModel orderModel, DriverIdAcceptReject driverIdAcceptReject) async {
+  static Future<bool?> acceptInterCityRide(InterCityOrderModel orderModel,
+      DriverIdAcceptReject driverIdAcceptReject) async {
     bool isAdded = false;
-    await fireStore.collection(CollectionName.ordersIntercity).doc(orderModel.id).collection("acceptedDriver").doc(driverIdAcceptReject.driverId).set(driverIdAcceptReject.toJson()).then((value) {
+    await fireStore
+        .collection(CollectionName.ordersIntercity)
+        .doc(orderModel.id)
+        .collection("acceptedDriver")
+        .doc(driverIdAcceptReject.driverId)
+        .set(driverIdAcceptReject.toJson())
+        .then((value) {
       isAdded = true;
     }).catchError((error) {
       log("Failed to update user: $error");
@@ -580,9 +826,15 @@ class FireStoreUtils {
   static Future<List<WalletTransactionModel>?> getWalletTransaction() async {
     List<WalletTransactionModel> walletTransactionModel = [];
 
-    await fireStore.collection(CollectionName.walletTransaction).where('userId', isEqualTo: FireStoreUtils.getCurrentUid()).orderBy('createdDate', descending: true).get().then((value) {
+    await fireStore
+        .collection(CollectionName.walletTransaction)
+        .where('userId', isEqualTo: FireStoreUtils.getCurrentUid())
+        .orderBy('createdDate', descending: true)
+        .get()
+        .then((value) {
       for (var element in value.docs) {
-        WalletTransactionModel taxModel = WalletTransactionModel.fromJson(element.data());
+        WalletTransactionModel taxModel =
+            WalletTransactionModel.fromJson(element.data());
         walletTransactionModel.add(taxModel);
       }
     }).catchError((error) {
@@ -591,9 +843,14 @@ class FireStoreUtils {
     return walletTransactionModel;
   }
 
-  static Future<bool?> setWalletTransaction(WalletTransactionModel walletTransactionModel) async {
+  static Future<bool?> setWalletTransaction(
+      WalletTransactionModel walletTransactionModel) async {
     bool isAdded = false;
-    await fireStore.collection(CollectionName.walletTransaction).doc(walletTransactionModel.id).set(walletTransactionModel.toJson()).then((value) {
+    await fireStore
+        .collection(CollectionName.walletTransaction)
+        .doc(walletTransactionModel.id)
+        .set(walletTransactionModel.toJson())
+        .then((value) {
       isAdded = true;
     }).catchError((error) {
       log("Failed to update user: $error");
@@ -607,7 +864,10 @@ class FireStoreUtils {
     await getDriverProfile(FireStoreUtils.getCurrentUid()).then((value) async {
       if (value != null) {
         DriverUserModel userModel = value;
-        userModel.walletAmount = (double.parse(userModel.walletAmount.toString()) + double.parse(amount)).toString();
+        userModel.walletAmount =
+            (double.parse(userModel.walletAmount.toString()) +
+                    double.parse(amount))
+                .toString();
         await FireStoreUtils.updateDriverUser(userModel).then((value) {
           isAdded = value;
         });
@@ -616,12 +876,16 @@ class FireStoreUtils {
     return isAdded;
   }
 
-  static Future<bool?> updatedOwnerWallet({required String amount, required String ownerId}) async {
+  static Future<bool?> updatedOwnerWallet(
+      {required String amount, required String ownerId}) async {
     bool isAdded = false;
     await getOwnerProfile(ownerId).then((value) async {
       if (value != null) {
         OwnerUserModel userModel = value;
-        userModel.walletAmount = (double.parse(userModel.walletAmount.toString()) + double.parse(amount)).toString();
+        userModel.walletAmount =
+            (double.parse(userModel.walletAmount.toString()) +
+                    double.parse(amount))
+                .toString();
         await FireStoreUtils.updateOwnerUser(userModel).then((value) {
           isAdded = value;
         });
@@ -633,7 +897,12 @@ class FireStoreUtils {
   static Future<List<LanguageModel>?> getLanguage() async {
     List<LanguageModel> languageList = [];
 
-    await fireStore.collection(CollectionName.languages).where("enable", isEqualTo: true).where("isDeleted", isEqualTo: false).get().then((value) {
+    await fireStore
+        .collection(CollectionName.languages)
+        .where("enable", isEqualTo: true)
+        .where("isDeleted", isEqualTo: false)
+        .get()
+        .then((value) {
       for (var element in value.docs) {
         LanguageModel taxModel = LanguageModel.fromJson(element.data());
         languageList.add(taxModel);
@@ -646,9 +915,14 @@ class FireStoreUtils {
 
   static Future<List<OnBoardingModel>> getOnBoardingList() async {
     List<OnBoardingModel> onBoardingModel = [];
-    await fireStore.collection(CollectionName.onBoarding).where("type", isEqualTo: "driverApp").get().then((value) {
+    await fireStore
+        .collection(CollectionName.onBoarding)
+        .where("type", isEqualTo: "driverApp")
+        .get()
+        .then((value) {
       for (var element in value.docs) {
-        OnBoardingModel documentModel = OnBoardingModel.fromJson(element.data());
+        OnBoardingModel documentModel =
+            OnBoardingModel.fromJson(element.data());
         onBoardingModel.add(documentModel);
       }
     }).catchError((error) {
@@ -658,33 +932,57 @@ class FireStoreUtils {
   }
 
   static Future addInBox(InboxModel inboxModel) async {
-    return await fireStore.collection(CollectionName.chat).doc(inboxModel.orderId).set(inboxModel.toJson()).then((document) {
+    return await fireStore
+        .collection(CollectionName.chat)
+        .doc(inboxModel.orderId)
+        .set(inboxModel.toJson())
+        .then((document) {
       return inboxModel;
     });
   }
 
   static Future addChat(ConversationModel conversationModel) async {
     log("Chat :: ${conversationModel.orderId} :: ${conversationModel.id}");
-    return await fireStore.collection(CollectionName.chat).doc(conversationModel.orderId).collection("thread").doc(conversationModel.id).set(conversationModel.toJson()).then((document) {
+    return await fireStore
+        .collection(CollectionName.chat)
+        .doc(conversationModel.orderId)
+        .collection("thread")
+        .doc(conversationModel.id)
+        .set(conversationModel.toJson())
+        .then((document) {
       return conversationModel;
     });
   }
 
   static Future addInAdminBox(InboxModel inboxModel) async {
-    return await fireStore.collection(CollectionName.chat).doc(FireStoreUtils.getCurrentUid()).set(inboxModel.toJson()).then((document) {
+    return await fireStore
+        .collection(CollectionName.chat)
+        .doc(FireStoreUtils.getCurrentUid())
+        .set(inboxModel.toJson())
+        .then((document) {
       return inboxModel;
     });
   }
 
   static Future addAdminChat(ConversationModel conversationModel) async {
-    return await fireStore.collection(CollectionName.chat).doc(conversationModel.senderId).collection("thread").doc(conversationModel.id).set(conversationModel.toJson()).then((document) {
+    return await fireStore
+        .collection(CollectionName.chat)
+        .doc(conversationModel.senderId)
+        .collection("thread")
+        .doc(conversationModel.id)
+        .set(conversationModel.toJson())
+        .then((document) {
       return conversationModel;
     });
   }
 
   static Future<BankDetailsModel?> getBankDetails() async {
     BankDetailsModel? bankDetailsModel;
-    await fireStore.collection(CollectionName.bankDetails).doc(FireStoreUtils.getCurrentUid()).get().then((value) {
+    await fireStore
+        .collection(CollectionName.bankDetails)
+        .doc(FireStoreUtils.getCurrentUid())
+        .get()
+        .then((value) {
       if (value.data() != null) {
         bankDetailsModel = BankDetailsModel.fromJson(value.data()!);
       }
@@ -692,9 +990,14 @@ class FireStoreUtils {
     return bankDetailsModel;
   }
 
-  static Future<bool?> updateBankDetails(BankDetailsModel bankDetailsModel) async {
+  static Future<bool?> updateBankDetails(
+      BankDetailsModel bankDetailsModel) async {
     bool isAdded = false;
-    await fireStore.collection(CollectionName.bankDetails).doc(bankDetailsModel.userId).set(bankDetailsModel.toJson()).then((value) {
+    await fireStore
+        .collection(CollectionName.bankDetails)
+        .doc(bankDetailsModel.userId)
+        .set(bankDetailsModel.toJson())
+        .then((value) {
       isAdded = true;
     }).catchError((error) {
       log("Failed to update user: $error");
@@ -705,7 +1008,11 @@ class FireStoreUtils {
 
   static Future<bool?> setWithdrawRequest(WithdrawModel withdrawModel) async {
     bool isAdded = false;
-    await fireStore.collection(CollectionName.withdrawalHistory).doc(withdrawModel.id).set(withdrawModel.toJson()).then((value) {
+    await fireStore
+        .collection(CollectionName.withdrawalHistory)
+        .doc(withdrawModel.id)
+        .set(withdrawModel.toJson())
+        .then((value) {
       isAdded = true;
     }).catchError((error) {
       log("Failed to update user: $error");
@@ -717,7 +1024,11 @@ class FireStoreUtils {
   static Future<bool?> deleteReferralCode(String uid) async {
     bool? isDelete;
     try {
-      await fireStore.collection(CollectionName.referral).doc(uid).delete().then((value) {
+      await fireStore
+          .collection(CollectionName.referral)
+          .doc(uid)
+          .delete()
+          .then((value) {
         isDelete = true;
       });
     } catch (e, s) {
@@ -729,7 +1040,12 @@ class FireStoreUtils {
 
   static Future<List<WithdrawModel>> getWithDrawRequest() async {
     List<WithdrawModel> withdrawalList = [];
-    await fireStore.collection(CollectionName.withdrawalHistory).where('userId', isEqualTo: getCurrentUid()).orderBy('createdDate', descending: true).get().then((value) {
+    await fireStore
+        .collection(CollectionName.withdrawalHistory)
+        .where('userId', isEqualTo: getCurrentUid())
+        .orderBy('createdDate', descending: true)
+        .get()
+        .then((value) {
       for (var element in value.docs) {
         WithdrawModel documentModel = WithdrawModel.fromJson(element.data());
         withdrawalList.add(documentModel);
@@ -750,7 +1066,10 @@ class FireStoreUtils {
       if (userId.isEmpty) {
         return false;
       }
-      await fireStore.collection(CollectionName.driverUsers).doc(userId).delete();
+      await fireStore
+          .collection(CollectionName.driverUsers)
+          .doc(userId)
+          .delete();
       await FireStoreUtils.deleteReferralCode(userId);
       await FireStoreUtils.deleteAuthUser(FireStoreUtils.getCurrentUid());
       // await FirebaseAuth.instance.currentUser?.delete();
@@ -761,9 +1080,14 @@ class FireStoreUtils {
     }
   }
 
-  static Future updateIntercityReferralAmount(InterCityOrderModel orderModel) async {
+  static Future updateIntercityReferralAmount(
+      InterCityOrderModel orderModel) async {
     ReferralModel? referralModel;
-    await fireStore.collection(CollectionName.referral).doc(orderModel.userId).get().then((value) {
+    await fireStore
+        .collection(CollectionName.referral)
+        .doc(orderModel.userId)
+        .get()
+        .then((value) {
       if (value.data() != null) {
         referralModel = ReferralModel.fromJson(value.data()!);
       } else {
@@ -771,26 +1095,35 @@ class FireStoreUtils {
       }
     });
     if (referralModel != null) {
-      if (referralModel!.referralBy != null && referralModel!.referralBy!.isNotEmpty) {
-        await fireStore.collection(CollectionName.driverUsers).doc(referralModel!.referralBy).get().then((value) async {
+      if (referralModel!.referralBy != null &&
+          referralModel!.referralBy!.isNotEmpty) {
+        await fireStore
+            .collection(CollectionName.driverUsers)
+            .doc(referralModel!.referralBy)
+            .get()
+            .then((value) async {
           DocumentSnapshot<Map<String, dynamic>> userDocumentDriver = value;
           if (userDocumentDriver.data() != null && userDocumentDriver.exists) {
             try {
-              DriverUserModel driver = DriverUserModel.fromJson(userDocumentDriver.data()!);
-              double referralAmount = double.parse(Constant.referralDriverAmount ?? '0.0');
-              bool? isUpdateBalance = await updatedDriverWalletById(driverId: driver.id!, referralAmount: referralAmount);
+              DriverUserModel driver =
+                  DriverUserModel.fromJson(userDocumentDriver.data()!);
+              double referralAmount =
+                  double.parse(Constant.referralDriverAmount ?? '0.0');
+              bool? isUpdateBalance = await updatedDriverWalletById(
+                  driverId: driver.id!, referralAmount: referralAmount);
 
               if (isUpdateBalance == true) {
-                WalletTransactionModel transactionModel = WalletTransactionModel(
-                    id: Constant.getUuid(),
-                    amount: referralAmount.toString(),
-                    createdDate: Timestamp.now(),
-                    paymentType: "Wallet",
-                    transactionId: orderModel.id,
-                    userId: driver.id.toString(),
-                    orderType: "intercity",
-                    userType: "driver",
-                    note: "Referral Amount");
+                WalletTransactionModel transactionModel =
+                    WalletTransactionModel(
+                        id: Constant.getUuid(),
+                        amount: referralAmount.toString(),
+                        createdDate: Timestamp.now(),
+                        paymentType: "Wallet",
+                        transactionId: orderModel.id,
+                        userId: driver.id.toString(),
+                        orderType: "intercity",
+                        userType: "driver",
+                        note: "Referral Amount");
 
                 await FireStoreUtils.setWalletTransaction(transactionModel);
               }
@@ -800,25 +1133,33 @@ class FireStoreUtils {
           }
         });
 
-        await fireStore.collection(CollectionName.users).doc(referralModel!.referralBy).get().then((value) async {
+        await fireStore
+            .collection(CollectionName.users)
+            .doc(referralModel!.referralBy)
+            .get()
+            .then((value) async {
           DocumentSnapshot<Map<String, dynamic>> userDocumentCustomer = value;
-          if (userDocumentCustomer.data() != null && userDocumentCustomer.exists) {
+          if (userDocumentCustomer.data() != null &&
+              userDocumentCustomer.exists) {
             try {
               UserModel user = UserModel.fromJson(userDocumentCustomer.data()!);
-              double referralAmount = double.parse(Constant.referralCustomerAmount ?? '0.0');
-              bool? isUpdateBalance = await updatedCustomerWalletById(customerId: user.id!, referralAmount: referralAmount);
+              double referralAmount =
+                  double.parse(Constant.referralCustomerAmount ?? '0.0');
+              bool? isUpdateBalance = await updatedCustomerWalletById(
+                  customerId: user.id!, referralAmount: referralAmount);
 
               if (isUpdateBalance == true) {
-                WalletTransactionModel transactionModel = WalletTransactionModel(
-                    id: Constant.getUuid(),
-                    amount: referralAmount.toString(),
-                    createdDate: Timestamp.now(),
-                    paymentType: "Wallet",
-                    transactionId: orderModel.id,
-                    userId: user.id.toString(),
-                    orderType: "intercity",
-                    userType: "customer",
-                    note: "Referral Amount");
+                WalletTransactionModel transactionModel =
+                    WalletTransactionModel(
+                        id: Constant.getUuid(),
+                        amount: referralAmount.toString(),
+                        createdDate: Timestamp.now(),
+                        paymentType: "Wallet",
+                        transactionId: orderModel.id,
+                        userId: user.id.toString(),
+                        orderType: "intercity",
+                        userType: "customer",
+                        note: "Referral Amount");
 
                 await FireStoreUtils.setWalletTransaction(transactionModel);
               }
@@ -833,9 +1174,14 @@ class FireStoreUtils {
     }
   }
 
-  static Future updateDriverIntercityReferralAmount(InterCityOrderModel orderModel) async {
+  static Future updateDriverIntercityReferralAmount(
+      InterCityOrderModel orderModel) async {
     ReferralModel? referralModel;
-    await fireStore.collection(CollectionName.referral).doc(orderModel.driverId).get().then((value) {
+    await fireStore
+        .collection(CollectionName.referral)
+        .doc(orderModel.driverId)
+        .get()
+        .then((value) {
       if (value.data() != null) {
         referralModel = ReferralModel.fromJson(value.data()!);
       } else {
@@ -843,26 +1189,35 @@ class FireStoreUtils {
       }
     });
     if (referralModel != null) {
-      if (referralModel!.referralBy != null && referralModel!.referralBy!.isNotEmpty) {
-        await fireStore.collection(CollectionName.driverUsers).doc(referralModel!.referralBy).get().then((value) async {
+      if (referralModel!.referralBy != null &&
+          referralModel!.referralBy!.isNotEmpty) {
+        await fireStore
+            .collection(CollectionName.driverUsers)
+            .doc(referralModel!.referralBy)
+            .get()
+            .then((value) async {
           DocumentSnapshot<Map<String, dynamic>> userDocumentDriver = value;
           if (userDocumentDriver.data() != null && userDocumentDriver.exists) {
             try {
-              DriverUserModel driver = DriverUserModel.fromJson(userDocumentDriver.data()!);
-              double referralAmount = double.parse(Constant.referralDriverAmount ?? '0.0');
-              bool? isUpdateBalance = await updatedDriverWalletById(driverId: driver.id!, referralAmount: referralAmount);
+              DriverUserModel driver =
+                  DriverUserModel.fromJson(userDocumentDriver.data()!);
+              double referralAmount =
+                  double.parse(Constant.referralDriverAmount ?? '0.0');
+              bool? isUpdateBalance = await updatedDriverWalletById(
+                  driverId: driver.id!, referralAmount: referralAmount);
 
               if (isUpdateBalance == true) {
-                WalletTransactionModel transactionModel = WalletTransactionModel(
-                    id: Constant.getUuid(),
-                    amount: referralAmount.toString(),
-                    createdDate: Timestamp.now(),
-                    paymentType: "Wallet",
-                    transactionId: orderModel.id,
-                    userId: driver.id.toString(),
-                    orderType: "intercity",
-                    userType: "driver",
-                    note: "Referral Amount");
+                WalletTransactionModel transactionModel =
+                    WalletTransactionModel(
+                        id: Constant.getUuid(),
+                        amount: referralAmount.toString(),
+                        createdDate: Timestamp.now(),
+                        paymentType: "Wallet",
+                        transactionId: orderModel.id,
+                        userId: driver.id.toString(),
+                        orderType: "intercity",
+                        userType: "driver",
+                        note: "Referral Amount");
 
                 await FireStoreUtils.setWalletTransaction(transactionModel);
               }
@@ -872,28 +1227,37 @@ class FireStoreUtils {
           }
         });
 
-        await fireStore.collection(CollectionName.users).doc(referralModel!.referralBy).get().then((value) async {
+        await fireStore
+            .collection(CollectionName.users)
+            .doc(referralModel!.referralBy)
+            .get()
+            .then((value) async {
           DocumentSnapshot<Map<String, dynamic>> userDocumentCustomer = value;
-          if (userDocumentCustomer.data() != null && userDocumentCustomer.exists) {
+          if (userDocumentCustomer.data() != null &&
+              userDocumentCustomer.exists) {
             try {
               UserModel user = UserModel.fromJson(userDocumentCustomer.data()!);
               double referralAmount = 0.0;
 
-              referralAmount = double.parse(Constant.referralCustomerAmount ?? '0.0');
+              referralAmount =
+                  double.parse(Constant.referralCustomerAmount ?? '0.0');
 
-              user.walletAmount = (double.parse(user.walletAmount ?? '0.0') + referralAmount).toString();
+              user.walletAmount =
+                  (double.parse(user.walletAmount ?? '0.0') + referralAmount)
+                      .toString();
               bool isUpdateBalance = await updateUser(user);
               if (isUpdateBalance == true) {
-                WalletTransactionModel transactionModel = WalletTransactionModel(
-                    id: Constant.getUuid(),
-                    amount: referralAmount.toString(),
-                    createdDate: Timestamp.now(),
-                    paymentType: "Wallet",
-                    transactionId: orderModel.id,
-                    userId: user.id.toString(),
-                    orderType: "intercity",
-                    userType: "customer",
-                    note: "Referral Amount");
+                WalletTransactionModel transactionModel =
+                    WalletTransactionModel(
+                        id: Constant.getUuid(),
+                        amount: referralAmount.toString(),
+                        createdDate: Timestamp.now(),
+                        paymentType: "Wallet",
+                        transactionId: orderModel.id,
+                        userId: user.id.toString(),
+                        orderType: "intercity",
+                        userType: "customer",
+                        note: "Referral Amount");
 
                 await FireStoreUtils.setWalletTransaction(transactionModel);
               }
@@ -908,11 +1272,20 @@ class FireStoreUtils {
     }
   }
 
-  static Future<bool> getCustomerFirstOrderOrNot({required String customerId, required String orderType}) async {
+  static Future<bool> getCustomerFirstOrderOrNot(
+      {required String customerId, required String orderType}) async {
     try {
-      final normalOrders = await fireStore.collection(CollectionName.orders).where('userId', isEqualTo: customerId).where('status', isEqualTo: Constant.rideComplete).get();
+      final normalOrders = await fireStore
+          .collection(CollectionName.orders)
+          .where('userId', isEqualTo: customerId)
+          .where('status', isEqualTo: Constant.rideComplete)
+          .get();
 
-      final interCityOrders = await fireStore.collection(CollectionName.ordersIntercity).where('userId', isEqualTo: customerId).where('status', isEqualTo: Constant.rideComplete).get();
+      final interCityOrders = await fireStore
+          .collection(CollectionName.ordersIntercity)
+          .where('userId', isEqualTo: customerId)
+          .where('status', isEqualTo: Constant.rideComplete)
+          .get();
 
       if (orderType == 'order') {
         if (normalOrders.docs.length <= 1 && interCityOrders.docs.isEmpty) {
@@ -932,11 +1305,20 @@ class FireStoreUtils {
     }
   }
 
-  static Future<bool> getDriverFirstOrderOrNot({required String driverId, required String orderType}) async {
+  static Future<bool> getDriverFirstOrderOrNot(
+      {required String driverId, required String orderType}) async {
     try {
-      final normalOrders = await fireStore.collection(CollectionName.orders).where('driverId', isEqualTo: driverId).where('status', isEqualTo: Constant.rideComplete).get();
+      final normalOrders = await fireStore
+          .collection(CollectionName.orders)
+          .where('driverId', isEqualTo: driverId)
+          .where('status', isEqualTo: Constant.rideComplete)
+          .get();
 
-      final interCityOrders = await fireStore.collection(CollectionName.ordersIntercity).where('driverId', isEqualTo: driverId).where('status', isEqualTo: Constant.rideComplete).get();
+      final interCityOrders = await fireStore
+          .collection(CollectionName.ordersIntercity)
+          .where('driverId', isEqualTo: driverId)
+          .where('status', isEqualTo: Constant.rideComplete)
+          .get();
 
       if (orderType == 'order') {
         if (normalOrders.docs.length <= 1 && interCityOrders.docs.isEmpty) {
@@ -958,7 +1340,11 @@ class FireStoreUtils {
 
   static Future updateReferralAmount(OrderModel orderModel) async {
     ReferralModel? referralModel;
-    await fireStore.collection(CollectionName.referral).doc(orderModel.userId).get().then((value) {
+    await fireStore
+        .collection(CollectionName.referral)
+        .doc(orderModel.userId)
+        .get()
+        .then((value) {
       if (value.data() != null) {
         referralModel = ReferralModel.fromJson(value.data()!);
       } else {
@@ -966,27 +1352,36 @@ class FireStoreUtils {
       }
     });
     if (referralModel != null) {
-      if (referralModel!.referralBy != null && referralModel!.referralBy!.isNotEmpty) {
-        await fireStore.collection(CollectionName.driverUsers).doc(referralModel!.referralBy).get().then((value) async {
+      if (referralModel!.referralBy != null &&
+          referralModel!.referralBy!.isNotEmpty) {
+        await fireStore
+            .collection(CollectionName.driverUsers)
+            .doc(referralModel!.referralBy)
+            .get()
+            .then((value) async {
           DocumentSnapshot<Map<String, dynamic>> userDocumentDriver = value;
 
           if (userDocumentDriver.data() != null && userDocumentDriver.exists) {
             try {
-              DriverUserModel driver = DriverUserModel.fromJson(userDocumentDriver.data()!);
-              double referralAmount = double.parse(Constant.referralDriverAmount ?? '0.0');
-              bool? isUpdateBalance = await updatedDriverWalletById(driverId: driver.id!, referralAmount: referralAmount);
+              DriverUserModel driver =
+                  DriverUserModel.fromJson(userDocumentDriver.data()!);
+              double referralAmount =
+                  double.parse(Constant.referralDriverAmount ?? '0.0');
+              bool? isUpdateBalance = await updatedDriverWalletById(
+                  driverId: driver.id!, referralAmount: referralAmount);
 
               if (isUpdateBalance == true) {
-                WalletTransactionModel transactionModel = WalletTransactionModel(
-                    id: Constant.getUuid(),
-                    amount: referralAmount.toString(),
-                    createdDate: Timestamp.now(),
-                    paymentType: "Wallet",
-                    transactionId: orderModel.id,
-                    userId: driver.id.toString(),
-                    orderType: "city",
-                    userType: "driver",
-                    note: "Referral Amount");
+                WalletTransactionModel transactionModel =
+                    WalletTransactionModel(
+                        id: Constant.getUuid(),
+                        amount: referralAmount.toString(),
+                        createdDate: Timestamp.now(),
+                        paymentType: "Wallet",
+                        transactionId: orderModel.id,
+                        userId: driver.id.toString(),
+                        orderType: "city",
+                        userType: "driver",
+                        note: "Referral Amount");
 
                 await FireStoreUtils.setWalletTransaction(transactionModel);
               }
@@ -996,26 +1391,34 @@ class FireStoreUtils {
           }
         });
 
-        await fireStore.collection(CollectionName.users).doc(referralModel!.referralBy).get().then((value) async {
+        await fireStore
+            .collection(CollectionName.users)
+            .doc(referralModel!.referralBy)
+            .get()
+            .then((value) async {
           DocumentSnapshot<Map<String, dynamic>> userDocumentCustomer = value;
 
-          if (userDocumentCustomer.data() != null && userDocumentCustomer.exists) {
+          if (userDocumentCustomer.data() != null &&
+              userDocumentCustomer.exists) {
             try {
               UserModel user = UserModel.fromJson(userDocumentCustomer.data()!);
-              double referralAmount = double.parse(Constant.referralCustomerAmount ?? '0.0');
-              bool? isUpdateBalance = await updatedCustomerWalletById(customerId: user.id!, referralAmount: referralAmount);
+              double referralAmount =
+                  double.parse(Constant.referralCustomerAmount ?? '0.0');
+              bool? isUpdateBalance = await updatedCustomerWalletById(
+                  customerId: user.id!, referralAmount: referralAmount);
 
               if (isUpdateBalance == true) {
-                WalletTransactionModel transactionModel = WalletTransactionModel(
-                    id: Constant.getUuid(),
-                    amount: referralAmount.toString(),
-                    createdDate: Timestamp.now(),
-                    paymentType: "Wallet",
-                    transactionId: orderModel.id,
-                    userId: user.id.toString(),
-                    orderType: "city",
-                    userType: "customer",
-                    note: "Referral Amount");
+                WalletTransactionModel transactionModel =
+                    WalletTransactionModel(
+                        id: Constant.getUuid(),
+                        amount: referralAmount.toString(),
+                        createdDate: Timestamp.now(),
+                        paymentType: "Wallet",
+                        transactionId: orderModel.id,
+                        userId: user.id.toString(),
+                        orderType: "city",
+                        userType: "customer",
+                        note: "Referral Amount");
 
                 await FireStoreUtils.setWalletTransaction(transactionModel);
               }
@@ -1032,7 +1435,11 @@ class FireStoreUtils {
 
   static Future updateDriverReferralAmount(OrderModel orderModel) async {
     ReferralModel? referralModel;
-    await fireStore.collection(CollectionName.referral).doc(orderModel.driverId).get().then((value) {
+    await fireStore
+        .collection(CollectionName.referral)
+        .doc(orderModel.driverId)
+        .get()
+        .then((value) {
       if (value.data() != null) {
         referralModel = ReferralModel.fromJson(value.data()!);
       } else {
@@ -1041,27 +1448,36 @@ class FireStoreUtils {
     });
 
     if (referralModel != null) {
-      if (referralModel!.referralBy != null && referralModel!.referralBy!.isNotEmpty) {
-        await fireStore.collection(CollectionName.driverUsers).doc(referralModel!.referralBy).get().then((value) async {
+      if (referralModel!.referralBy != null &&
+          referralModel!.referralBy!.isNotEmpty) {
+        await fireStore
+            .collection(CollectionName.driverUsers)
+            .doc(referralModel!.referralBy)
+            .get()
+            .then((value) async {
           DocumentSnapshot<Map<String, dynamic>> userDocumentDriver = value;
 
           if (userDocumentDriver.data() != null && userDocumentDriver.exists) {
             try {
-              DriverUserModel driver = DriverUserModel.fromJson(userDocumentDriver.data()!);
-              double referralAmount = double.parse(Constant.referralDriverAmount ?? '0.0');
-              bool? isUpdateBalance = await updatedDriverWalletById(driverId: driver.id!, referralAmount: referralAmount);
+              DriverUserModel driver =
+                  DriverUserModel.fromJson(userDocumentDriver.data()!);
+              double referralAmount =
+                  double.parse(Constant.referralDriverAmount ?? '0.0');
+              bool? isUpdateBalance = await updatedDriverWalletById(
+                  driverId: driver.id!, referralAmount: referralAmount);
 
               if (isUpdateBalance == true) {
-                WalletTransactionModel transactionModel = WalletTransactionModel(
-                    id: Constant.getUuid(),
-                    amount: referralAmount.toString(),
-                    createdDate: Timestamp.now(),
-                    paymentType: "Wallet",
-                    transactionId: orderModel.id,
-                    userId: driver.id.toString(),
-                    orderType: "intercity",
-                    userType: "driver",
-                    note: "Referral Amount");
+                WalletTransactionModel transactionModel =
+                    WalletTransactionModel(
+                        id: Constant.getUuid(),
+                        amount: referralAmount.toString(),
+                        createdDate: Timestamp.now(),
+                        paymentType: "Wallet",
+                        transactionId: orderModel.id,
+                        userId: driver.id.toString(),
+                        orderType: "intercity",
+                        userType: "driver",
+                        note: "Referral Amount");
 
                 await FireStoreUtils.setWalletTransaction(transactionModel);
               }
@@ -1071,26 +1487,34 @@ class FireStoreUtils {
           }
         });
 
-        await fireStore.collection(CollectionName.users).doc(referralModel!.referralBy).get().then((value) async {
+        await fireStore
+            .collection(CollectionName.users)
+            .doc(referralModel!.referralBy)
+            .get()
+            .then((value) async {
           DocumentSnapshot<Map<String, dynamic>> userDocumentCustomer = value;
 
-          if (userDocumentCustomer.data() != null && userDocumentCustomer.exists) {
+          if (userDocumentCustomer.data() != null &&
+              userDocumentCustomer.exists) {
             try {
               UserModel user = UserModel.fromJson(userDocumentCustomer.data()!);
-              double referralAmount = double.parse(Constant.referralCustomerAmount ?? '0.0');
-              bool? isUpdateBalance = await updatedCustomerWalletById(customerId: user.id!, referralAmount: referralAmount);
+              double referralAmount =
+                  double.parse(Constant.referralCustomerAmount ?? '0.0');
+              bool? isUpdateBalance = await updatedCustomerWalletById(
+                  customerId: user.id!, referralAmount: referralAmount);
 
               if (isUpdateBalance == true) {
-                WalletTransactionModel transactionModel = WalletTransactionModel(
-                    id: Constant.getUuid(),
-                    amount: referralAmount.toString(),
-                    createdDate: Timestamp.now(),
-                    paymentType: "Wallet",
-                    transactionId: orderModel.id,
-                    userId: user.id.toString(),
-                    orderType: "intercity",
-                    userType: "customer",
-                    note: "Referral Amount");
+                WalletTransactionModel transactionModel =
+                    WalletTransactionModel(
+                        id: Constant.getUuid(),
+                        amount: referralAmount.toString(),
+                        createdDate: Timestamp.now(),
+                        paymentType: "Wallet",
+                        transactionId: orderModel.id,
+                        userId: user.id.toString(),
+                        orderType: "intercity",
+                        userType: "customer",
+                        note: "Referral Amount");
 
                 await FireStoreUtils.setWalletTransaction(transactionModel);
               }
@@ -1107,7 +1531,11 @@ class FireStoreUtils {
 
   static Future<List<ZoneModel>?> getZone() async {
     List<ZoneModel> airPortList = [];
-    await fireStore.collection(CollectionName.zone).where('publish', isEqualTo: true).get().then((value) {
+    await fireStore
+        .collection(CollectionName.zone)
+        .where('publish', isEqualTo: true)
+        .get()
+        .then((value) {
       for (var element in value.docs) {
         ZoneModel ariPortModel = ZoneModel.fromJson(element.data());
         airPortList.add(ariPortModel);
@@ -1131,15 +1559,18 @@ class FireStoreUtils {
         .then((value) async {
       if (value.docs.isNotEmpty) {
         for (var element in value.docs) {
-          SubscriptionPlanModel subscriptionPlanModel = SubscriptionPlanModel.fromJson(element.data());
+          SubscriptionPlanModel subscriptionPlanModel =
+              SubscriptionPlanModel.fromJson(element.data());
           if (Constant.isSubscriptionModelApplied == false) {
             if (subscriptionPlanModel.id == Constant.commissionSubscriptionID) {
-              if (subscriptionPlanModel.planFor == Constant.currentUserType || subscriptionPlanModel.planFor == 'both') {
+              if (subscriptionPlanModel.planFor == Constant.currentUserType ||
+                  subscriptionPlanModel.planFor == 'both') {
                 subscriptionPlanModels.add(subscriptionPlanModel);
               }
             }
           } else {
-            if (subscriptionPlanModel.planFor == Constant.currentUserType || subscriptionPlanModel.planFor == 'both') {
+            if (subscriptionPlanModel.planFor == Constant.currentUserType ||
+                subscriptionPlanModel.planFor == 'both') {
               subscriptionPlanModels.add(subscriptionPlanModel);
             }
           }
@@ -1149,29 +1580,45 @@ class FireStoreUtils {
     return subscriptionPlanModels;
   }
 
-  static Future<SubscriptionPlanModel?> getSubscriptionPlanById({required String planId}) async {
+  static Future<SubscriptionPlanModel?> getSubscriptionPlanById(
+      {required String planId}) async {
     SubscriptionPlanModel? subscriptionPlanModel = SubscriptionPlanModel();
     if (planId.isNotEmpty) {
-      await fireStore.collection(CollectionName.subscriptionPlans).doc(planId).get().then((value) async {
+      await fireStore
+          .collection(CollectionName.subscriptionPlans)
+          .doc(planId)
+          .get()
+          .then((value) async {
         if (value.exists) {
-          subscriptionPlanModel = SubscriptionPlanModel.fromJson(value.data() as Map<String, dynamic>);
+          subscriptionPlanModel = SubscriptionPlanModel.fromJson(
+              value.data() as Map<String, dynamic>);
         }
       });
     }
     return subscriptionPlanModel;
   }
 
-  static Future<SubscriptionPlanModel> setSubscriptionPlan(SubscriptionPlanModel subscriptionPlanModel) async {
+  static Future<SubscriptionPlanModel> setSubscriptionPlan(
+      SubscriptionPlanModel subscriptionPlanModel) async {
     if (subscriptionPlanModel.id?.isEmpty == true) {
       subscriptionPlanModel.id = const Uuid().v4();
     }
-    await fireStore.collection(CollectionName.subscriptionPlans).doc(subscriptionPlanModel.id).set(subscriptionPlanModel.toJson()).then((value) async {});
+    await fireStore
+        .collection(CollectionName.subscriptionPlans)
+        .doc(subscriptionPlanModel.id)
+        .set(subscriptionPlanModel.toJson())
+        .then((value) async {});
     return subscriptionPlanModel;
   }
 
-  static Future<bool?> setSubscriptionTransaction(SubscriptionHistoryModel subscriptionPlan) async {
+  static Future<bool?> setSubscriptionTransaction(
+      SubscriptionHistoryModel subscriptionPlan) async {
     bool isAdded = false;
-    await fireStore.collection(CollectionName.subscriptionHistory).doc(subscriptionPlan.id).set(subscriptionPlan.toJson()).then((value) {
+    await fireStore
+        .collection(CollectionName.subscriptionHistory)
+        .doc(subscriptionPlan.id)
+        .set(subscriptionPlan.toJson())
+        .then((value) {
       isAdded = true;
     }).catchError((error) {
       log("Failed to update user: $error");
@@ -1182,10 +1629,16 @@ class FireStoreUtils {
 
   static Future<List<SubscriptionHistoryModel>> getSubscriptionHistory() async {
     List<SubscriptionHistoryModel> subscriptionHistoryList = [];
-    await fireStore.collection(CollectionName.subscriptionHistory).where('user_id', isEqualTo: getCurrentUid()).orderBy('createdAt', descending: true).get().then((value) async {
+    await fireStore
+        .collection(CollectionName.subscriptionHistory)
+        .where('user_id', isEqualTo: getCurrentUid())
+        .orderBy('createdAt', descending: true)
+        .get()
+        .then((value) async {
       if (value.docs.isNotEmpty) {
         for (var element in value.docs) {
-          SubscriptionHistoryModel subscriptionHistoryModel = SubscriptionHistoryModel.fromJson(element.data());
+          SubscriptionHistoryModel subscriptionHistoryModel =
+              SubscriptionHistoryModel.fromJson(element.data());
           subscriptionHistoryList.add(subscriptionHistoryModel);
         }
       }
@@ -1222,9 +1675,16 @@ class FireStoreUtils {
   }
 
   static late StreamSubscription<QuerySnapshot> customerChatSeenSubscription;
-  static void setCustomerChatSeen({required String orderId, required String customerId}) {
-    customerChatSeenSubscription =
-        fireStore.collection(CollectionName.chat).doc(orderId).collection("thread").where('senderId', isEqualTo: customerId).where('seen', isEqualTo: false).snapshots().listen((querySnapshot) async {
+  static void setCustomerChatSeen(
+      {required String orderId, required String customerId}) {
+    customerChatSeenSubscription = fireStore
+        .collection(CollectionName.chat)
+        .doc(orderId)
+        .collection("thread")
+        .where('senderId', isEqualTo: customerId)
+        .where('seen', isEqualTo: false)
+        .snapshots()
+        .listen((querySnapshot) async {
       for (final doc in querySnapshot.docs) {
         try {
           log("querySnapshot.docs :: ${doc.data().length}");
@@ -1245,7 +1705,11 @@ class FireStoreUtils {
   static Future<bool?> checkReferralCodeValidOrNot(String referralCode) async {
     bool? isExit;
     try {
-      await fireStore.collection(CollectionName.referral).where("referralCode", isEqualTo: referralCode).get().then((value) {
+      await fireStore
+          .collection(CollectionName.referral)
+          .where("referralCode", isEqualTo: referralCode)
+          .get()
+          .then((value) {
         if (value.size > 0) {
           isExit = true;
         } else {
@@ -1259,10 +1723,15 @@ class FireStoreUtils {
     return isExit;
   }
 
-  static Future<ReferralModel?> getReferralUserByCode(String referralCode) async {
+  static Future<ReferralModel?> getReferralUserByCode(
+      String referralCode) async {
     ReferralModel? referralModel;
     try {
-      await fireStore.collection(CollectionName.referral).where("referralCode", isEqualTo: referralCode).get().then((value) {
+      await fireStore
+          .collection(CollectionName.referral)
+          .where("referralCode", isEqualTo: referralCode)
+          .get()
+          .then((value) {
         referralModel = ReferralModel.fromJson(value.docs.first.data());
       });
     } catch (e, s) {
@@ -1274,7 +1743,10 @@ class FireStoreUtils {
 
   static Future<String?> referralAdd(ReferralModel ratingModel) async {
     try {
-      await fireStore.collection(CollectionName.referral).doc(ratingModel.id).set(ratingModel.toJson());
+      await fireStore
+          .collection(CollectionName.referral)
+          .doc(ratingModel.id)
+          .set(ratingModel.toJson());
     } catch (e, s) {
       log('FireStoreUtils.firebaseCreateNewUser $e $s');
       return null;
@@ -1284,7 +1756,11 @@ class FireStoreUtils {
 
   static Future<ReferralModel?> getReferral() async {
     ReferralModel? referralModel;
-    await fireStore.collection(CollectionName.referral).doc(FireStoreUtils.getCurrentUid()).get().then((value) {
+    await fireStore
+        .collection(CollectionName.referral)
+        .doc(FireStoreUtils.getCurrentUid())
+        .get()
+        .then((value) {
       if (value.exists) {
         referralModel = ReferralModel.fromJson(value.data()!);
       }
@@ -1297,7 +1773,11 @@ class FireStoreUtils {
 
   static Future<OwnerUserModel?> getOwnerProfile(String uuid) async {
     OwnerUserModel? ownerModel;
-    await fireStore.collection(CollectionName.ownerUsers).doc(uuid).get().then((value) {
+    await fireStore
+        .collection(CollectionName.ownerUsers)
+        .doc(uuid)
+        .get()
+        .then((value) {
       if (value.exists) {
         ownerModel = OwnerUserModel.fromJson(value.data()!);
       }
@@ -1310,7 +1790,11 @@ class FireStoreUtils {
 
   static Future<bool> updateOwnerUser(OwnerUserModel userModel) async {
     bool isUpdate = false;
-    await fireStore.collection(CollectionName.ownerUsers).doc(userModel.id).set(userModel.toJson()).whenComplete(() {
+    await fireStore
+        .collection(CollectionName.ownerUsers)
+        .doc(userModel.id)
+        .set(userModel.toJson())
+        .whenComplete(() {
       isUpdate = true;
     }).catchError((error) {
       log("Failed to update user: $error");
@@ -1321,7 +1805,12 @@ class FireStoreUtils {
 
   static Future<ServiceModel> getServiceById(String? id) async {
     ServiceModel serviceList = ServiceModel();
-    await fireStore.collection(CollectionName.service).where('id', isEqualTo: id).where('enable', isEqualTo: true).get().then((value) {
+    await fireStore
+        .collection(CollectionName.service)
+        .where('id', isEqualTo: id)
+        .where('enable', isEqualTo: true)
+        .get()
+        .then((value) {
       serviceList = ServiceModel.fromJson(value.docs.first.data());
     }).catchError((error) {
       log(error.toString());
@@ -1331,7 +1820,11 @@ class FireStoreUtils {
 
   static Future<ZoneModel> getZoneById({required String zoneId}) async {
     ZoneModel zoneModeldata = ZoneModel();
-    await fireStore.collection(CollectionName.zone).doc(zoneId).get().then((value) {
+    await fireStore
+        .collection(CollectionName.zone)
+        .doc(zoneId)
+        .get()
+        .then((value) {
       if (value.data() != null) {
         zoneModeldata = ZoneModel.fromJson(value.data()!);
       }
@@ -1352,7 +1845,8 @@ class FireStoreUtils {
       }
 
       const projectId = "goride-1a752";
-      final url = Uri.parse("https://us-central1-$projectId.cloudfunctions.net/deleteUser");
+      final url = Uri.parse(
+          "https://us-central1-$projectId.cloudfunctions.net/deleteUser");
 
       final response = await http.post(
         url,
@@ -1368,7 +1862,8 @@ class FireStoreUtils {
       if (response.statusCode == 200) {
         print("User deleted successfully: ${response.body}");
       } else {
-        print(" Error deleting user: ${response.statusCode} - ${response.body}");
+        print(
+            " Error deleting user: ${response.statusCode} - ${response.body}");
       }
     } catch (e) {
       print("🔥 Exception while deleting user: $e");

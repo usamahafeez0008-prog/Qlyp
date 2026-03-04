@@ -15,7 +15,8 @@ import 'package:intl/intl.dart';
 class DetailsUploadController extends GetxController {
   Rx<DocumentModel> documentModel = DocumentModel().obs;
 
-  Rx<TextEditingController> documentNumberController = TextEditingController().obs;
+  Rx<TextEditingController> documentNumberController =
+      TextEditingController().obs;
   Rx<TextEditingController> expireAtController = TextEditingController().obs;
   Rx<DateTime?> selectedDate = DateTime.now().obs;
 
@@ -46,16 +47,19 @@ class DetailsUploadController extends GetxController {
     await FireStoreUtils.getDocumentOfDriver().then((value) {
       isLoading.value = false;
       if (value != null) {
-        var contain = value.documents!.where((element) => element.documentId == documentModel.value.id);
+        var contain = value.documents!
+            .where((element) => element.documentId == documentModel.value.id);
         if (contain.isNotEmpty) {
-          documents.value = value.documents!.firstWhere((itemToCheck) => itemToCheck.documentId == documentModel.value.id);
+          documents.value = value.documents!.firstWhere((itemToCheck) =>
+              itemToCheck.documentId == documentModel.value.id);
 
           documentNumberController.value.text = documents.value.documentNumber!;
           frontImage.value = documents.value.frontImage!;
           backImage.value = documents.value.backImage!;
           if (documents.value.expireAt != null) {
             selectedDate.value = documents.value.expireAt!.toDate();
-            expireAtController.value.text = DateFormat("dd-MM-yyyy").format(selectedDate.value!);
+            expireAtController.value.text =
+                DateFormat("dd-MM-yyyy").format(selectedDate.value!);
           }
         }
       }
@@ -68,7 +72,6 @@ class DetailsUploadController extends GetxController {
     try {
       XFile? image = await _imagePicker.pickImage(source: source);
       if (image == null) return;
-      Get.back();
 
       if (type == "front") {
         frontImage.value = image.path;
@@ -80,17 +83,24 @@ class DetailsUploadController extends GetxController {
     }
   }
 
-
   uploadDocument() async {
     String frontImageFileName = File(frontImage.value).path.split('/').last;
     String backImageFileName = File(backImage.value).path.split('/').last;
 
-    if(frontImage.value.isNotEmpty && Constant().hasValidUrl(frontImage.value) == false){
-      frontImage.value = await Constant.uploadUserImageToFireStorage(File(frontImage.value), "driverDocument/${FireStoreUtils.getCurrentUid()}", frontImageFileName);
+    if (frontImage.value.isNotEmpty &&
+        Constant().hasValidUrl(frontImage.value) == false) {
+      frontImage.value = await Constant.uploadUserImageToFireStorage(
+          File(frontImage.value),
+          "driverDocument/${FireStoreUtils.getCurrentUid()}",
+          frontImageFileName);
     }
 
-    if(backImage.value.isNotEmpty && Constant().hasValidUrl(backImage.value) == false){
-      backImage.value = await Constant.uploadUserImageToFireStorage(File(backImage.value), "driverDocument/${FireStoreUtils.getCurrentUid()}", backImageFileName);
+    if (backImage.value.isNotEmpty &&
+        Constant().hasValidUrl(backImage.value) == false) {
+      backImage.value = await Constant.uploadUserImageToFireStorage(
+          File(backImage.value),
+          "driverDocument/${FireStoreUtils.getCurrentUid()}",
+          backImageFileName);
     }
     documents.value.frontImage = frontImage.value;
     documents.value.documentId = documentModel.value.id;

@@ -12,7 +12,16 @@ class ServiceModel {
   AdminCommission? adminCommission;
   List<Price>? prices;
 
-  ServiceModel({this.image, this.enable, this.intercityType, this.offerRate, this.id, this.markerIcon, this.title, this.adminCommission, this.prices});
+  ServiceModel(
+      {this.image,
+      this.enable,
+      this.intercityType,
+      this.offerRate,
+      this.id,
+      this.markerIcon,
+      this.title,
+      this.adminCommission,
+      this.prices});
 
   ServiceModel.fromJson(Map<String, dynamic> json) {
     image = json['image'];
@@ -21,7 +30,9 @@ class ServiceModel {
     id = json['id'];
     markerIcon = json['markerIcon'];
     intercityType = json['intercityType'];
-    adminCommission = json['adminCommission'] != null ? AdminCommission.fromJson(json['adminCommission']) : AdminCommission(isEnabled: true, amount: "", type: "");
+    adminCommission = json['adminCommission'] != null
+        ? AdminCommission.fromJson(json['adminCommission'])
+        : AdminCommission(isEnabled: true, amount: "", type: "");
     if (json['title'] != null) {
       title = <LanguageName>[];
       json['title'].forEach((v) {
@@ -54,6 +65,16 @@ class ServiceModel {
     data['prices'] = prices?.map((e) => e.toMap()).toList();
     return data;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ServiceModel &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 class Price {
