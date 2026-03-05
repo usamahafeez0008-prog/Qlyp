@@ -23,47 +23,6 @@ class HomeScreen extends StatelessWidget {
           FireStoreUtils().closeStream();
         },
         builder: (controller) {
-          /*
-          // Previous UI commented out as requested
-          return Scaffold(
-            backgroundColor: AppColors.qlypOffWhite,
-            body: controller.isLoading.value || controller.driverModel.value.id == null
-                ? Constant.loader(isDarkTheme: themeChange.getThem())
-                : Column(
-                    children: [
-                      if (controller.driverModel.value.ownerId == null)
-                        double.parse(controller.driverModel.value.walletAmount ?? '0.0') >= double.parse(Constant.minimumDepositToRideAccept)
-                            ? SizedBox(
-                                height: Responsive.width(8, context),
-                                width: Responsive.width(100, context),
-                              )
-                            : SizedBox(
-                                height: Responsive.width(18, context),
-                                width: Responsive.width(100, context),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                                  child: Text("You have to minimum ${Constant.amountShow(amount: Constant.minimumDepositToRideAccept.toString())} wallet amount to Accept Order and place a bid".tr,
-                                      style: GoogleFonts.poppins(color: Colors.white)),
-                                ),
-                              ),
-                      Expanded(
-                        child: Container(
-                          height: Responsive.height(100, context),
-                          width: Responsive.width(100, context),
-                          decoration:
-                              BoxDecoration(color: Theme.of(context).colorScheme.background, borderRadius: const BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25))),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: controller.widgetOptions.elementAt(controller.selectedIndex.value),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-            bottomNavigationBar: BottomNavigationBar(...),
-          );
-          */
-
           if (controller.isLoading.value ||
               controller.driverModel.value.id == null) {
             return Constant.loader(isDarkTheme: isDark);
@@ -87,47 +46,91 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Performance Cards
+                  // Section Title: YOUR PERFORMANCE
+                  Text(
+                    "YOUR PERFORMANCE".tr,
+                    style: GoogleFonts.outfit(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: isDark ? Colors.white54 : Colors.black45,
+                      letterSpacing: 1.1,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Today's Earnings Card (Full Width)
+                  _buildEarningsCard(
+                    context,
+                    value: Constant.amountShow(amount: walletAmount.toString()),
+                    trend: "+12%",
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Rides and Rating (Side by Side)
                   Row(
                     children: [
                       _buildPerformanceCard(
                         context,
-                        title: "Today's Earnings".tr,
-                        value: Constant.amountShow(
-                            amount: walletAmount.toString()),
-                        icon: Icons.account_balance_wallet_rounded,
-                        color: AppColors.qlypDeepNavy,
-                      ),
-                      const SizedBox(width: 12),
-                      _buildPerformanceCard(
-                        context,
                         title: "Rides".tr,
-                        value: "12", // Placeholder for today's rides
-                        icon: Icons.directions_car_rounded,
-                        color: AppColors.qlypPrimaryFreshGreen,
+                        value: "14",
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(2),
+                          child: const LinearProgressIndicator(
+                            value: 0.7,
+                            minHeight: 6,
+                            backgroundColor: Color(0xFFE2E5EA),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                AppColors.qlypPrimaryFreshGreen),
+                          ),
+                        ),
                       ),
                       const SizedBox(width: 12),
                       _buildPerformanceCard(
                         context,
                         title: "Rating".tr,
                         value: rating.toStringAsFixed(1),
-                        icon: Icons.star_rounded,
-                        color: Colors.amber,
+                        showStar: true,
+                        subText: "LATEST 500 RIDES".tr,
                       ),
                     ],
                   ),
+
                   const SizedBox(height: 32),
-                  // Available Requests Title
-                  Text(
-                    "AVAILABLE REQUESTS".tr,
-                    style: GoogleFonts.outfit(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                      color: isDark ? Colors.white60 : Colors.black45,
-                      letterSpacing: 1.2,
-                    ),
+
+                  // Available Requests Title with Badge
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "AVAILABLE REQUESTS".tr,
+                        style: GoogleFonts.outfit(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          color: isDark ? Colors.white60 : Colors.black45,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color:
+                              AppColors.qlypPrimaryFreshGreen.withOpacity(0.12),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          "3 NEW".tr,
+                          style: GoogleFonts.outfit(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.qlypPrimaryFreshGreen,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16),
+
                   // Filter Chips
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -142,6 +145,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
+
                   // Content based on selected filter
                   Container(
                     width: double.infinity,
@@ -157,48 +161,151 @@ class HomeScreen extends StatelessWidget {
         });
   }
 
+  Widget _buildEarningsCard(BuildContext context,
+      {required String value, required String trend}) {
+    final bool isDark = Provider.of<DarkThemeProvider>(context).getThem();
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Today's Earnings".tr,
+                    style: GoogleFonts.outfit(
+                      fontSize: 14,
+                      color: isDark ? Colors.white54 : Colors.black45,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Icon(Icons.trending_up_rounded,
+                          color: AppColors.qlypPrimaryFreshGreen, size: 16),
+                      const SizedBox(width: 4),
+                      Text(
+                        trend,
+                        style: GoogleFonts.outfit(
+                          fontSize: 14,
+                          color: AppColors.qlypPrimaryFreshGreen,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                value,
+                style: GoogleFonts.outfit(
+                  fontSize: 32,
+                  fontWeight: FontWeight.w800,
+                  color: isDark ? Colors.white : Colors.black,
+                  letterSpacing: -0.5,
+                ),
+              ),
+            ],
+          ),
+          Positioned(
+            right: 0,
+            bottom: 0,
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.payments_rounded,
+                color: AppColors.qlypPrimaryFreshGreen,
+                size: 24,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildPerformanceCard(BuildContext context,
       {required String title,
       required String value,
-      required IconData icon,
-      required Color color}) {
+      Widget? child,
+      bool showStar = false,
+      String? subText}) {
     final bool isDark = Provider.of<DarkThemeProvider>(context).getThem();
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.all(12),
+        height: 120,
+        padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: color, size: 20),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: GoogleFonts.outfit(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: isDark ? Colors.white : Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 2),
             Text(
               title,
               style: GoogleFonts.outfit(
-                fontSize: 10,
-                color: isDark ? Colors.white38 : Colors.black38,
-                fontWeight: FontWeight.w600,
+                fontSize: 13,
+                color: isDark ? Colors.white54 : Colors.black45,
+                fontWeight: FontWeight.w500,
               ),
             ),
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                Text(
+                  value,
+                  style: GoogleFonts.outfit(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w800,
+                    color: isDark ? Colors.white : Colors.black,
+                  ),
+                ),
+                if (showStar) ...[
+                  const SizedBox(width: 6),
+                  const Icon(Icons.star_rounded, color: Colors.amber, size: 24),
+                ]
+              ],
+            ),
+            const Spacer(),
+            if (child != null) child,
+            if (subText != null)
+              Text(
+                subText,
+                style: GoogleFonts.outfit(
+                  fontSize: 9,
+                  color: isDark ? Colors.white24 : Colors.black26,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.5,
+                ),
+              ),
           ],
         ),
       ),
@@ -208,28 +315,42 @@ class HomeScreen extends StatelessWidget {
   Widget _buildFilterChip(BuildContext context, HomeController controller,
       int index, String label) {
     bool isSelected = controller.selectedIndex.value == index;
+    final bool isDark = Provider.of<DarkThemeProvider>(context).getThem();
+
     return GestureDetector(
       onTap: () => controller.selectedIndex.value = index,
       child: Container(
-        margin: const EdgeInsets.only(right: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        margin: const EdgeInsets.only(right: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color:
-              isSelected ? AppColors.qlypPrimaryFreshGreen : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
+          color: isSelected
+              ? AppColors.qlypPrimaryFreshGreen
+              : (isDark ? Colors.white.withOpacity(0.05) : Colors.white),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected
                 ? AppColors.qlypPrimaryFreshGreen
-                : Colors.grey.withOpacity(0.3),
+                : (isDark ? Colors.white12 : const Color(0xFFE2E5EA)),
             width: 1,
           ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppColors.qlypPrimaryFreshGreen.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  )
+                ]
+              : null,
         ),
         child: Text(
-          label,
+          label.tr,
           style: GoogleFonts.outfit(
             fontSize: 13,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-            color: isSelected ? Colors.white : Colors.grey,
+            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+            color: isSelected
+                ? Colors.white
+                : (isDark ? Colors.white70 : Colors.black87),
           ),
         ),
       ),
