@@ -2,11 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:driver/constant/constant.dart';
 import 'package:driver/constant/show_toast_dialog.dart';
 import 'package:driver/controller/order_map_controller.dart';
-import 'package:driver/model/owner_user_model.dart';
 import 'package:driver/model/user_model.dart';
 import 'package:driver/themes/app_colors.dart';
 import 'package:driver/utils/DarkThemeProvider.dart';
-import 'package:driver/utils/fire_store_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart' as flutterMap;
 import 'package:get/get.dart';
@@ -593,84 +591,11 @@ class OrderMapScreen extends StatelessWidget {
             flex: 2,
             child: GestureDetector(
               onTap: () async {
-                if (controller.driverModel.value.ownerId == null) {
-                  if (double.parse(controller.amount.value.toString()) > 0) {
-                    if (controller.driverModel.value.subscriptionTotalOrders ==
-                        "-1") {
-                      controller.acceptOrder();
-                    } else {
-                      if (Constant.isSubscriptionModelApplied == false &&
-                          Constant.adminCommission!.isEnabled == false) {
-                        controller.acceptOrder();
-                      } else {
-                        if ((controller.driverModel.value
-                                        .subscriptionExpiryDate !=
-                                    null &&
-                                controller.driverModel.value
-                                        .subscriptionExpiryDate!
-                                        .toDate()
-                                        .isBefore(DateTime.now()) ==
-                                    false) ||
-                            controller.driverModel.value.subscriptionPlan
-                                    ?.expiryDay ==
-                                '-1') {
-                          if (controller
-                                  .driverModel.value.subscriptionTotalOrders !=
-                              '0') {
-                            controller.acceptOrder();
-                          } else {
-                            ShowToastDialog.showToast(
-                                "Your order limit has reached its maximum capacity. Please subscribe to another plan."
-                                    .tr);
-                          }
-                        } else {
-                          ShowToastDialog.showToast(
-                              "Your subscription has expired. Please subscribe to another plan."
-                                  .tr);
-                        }
-                      }
-                    }
-                  } else {
-                    ShowToastDialog.showToast(
-                        "Please enter a valid offer rate".tr);
-                  }
+                if (double.parse(controller.amount.value.toString()) > 0) {
+                  controller.acceptOrder();
                 } else {
-                  OwnerUserModel? ownerUserModel =
-                      await FireStoreUtils.getOwnerProfile(
-                          controller.driverModel.value.ownerId!);
-                  if (double.parse(controller.amount.value.toString()) > 0) {
-                    if (ownerUserModel?.subscriptionTotalOrders == "-1") {
-                      controller.acceptOrder();
-                    } else {
-                      if (Constant.isSubscriptionModelApplied == false &&
-                          Constant.adminCommission!.isEnabled == false) {
-                        controller.acceptOrder();
-                      } else {
-                        if ((ownerUserModel?.subscriptionExpiryDate != null &&
-                                ownerUserModel?.subscriptionExpiryDate!
-                                        .toDate()
-                                        .isBefore(DateTime.now()) ==
-                                    false) ||
-                            ownerUserModel?.subscriptionPlan?.expiryDay ==
-                                '-1') {
-                          if (ownerUserModel?.subscriptionTotalOrders != '0') {
-                            controller.acceptOrder();
-                          } else {
-                            ShowToastDialog.showToast(
-                                "Your order limit has reached its maximum capacity. Please contact the owner."
-                                    .tr);
-                          }
-                        } else {
-                          ShowToastDialog.showToast(
-                              "Your subscription has expired. Please contact the owner."
-                                  .tr);
-                        }
-                      }
-                    }
-                  } else {
-                    ShowToastDialog.showToast(
-                        "Please enter a valid offer rate".tr);
-                  }
+                  ShowToastDialog.showToast(
+                      "Please enter a valid offer rate".tr);
                 }
               },
               child: Container(

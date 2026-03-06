@@ -14,8 +14,6 @@ import 'package:driver/ui/online_registration/registration_screen.dart';
 import 'package:driver/ui/profile_screen/profile_screen.dart';
 import 'package:driver/ui/refer_and_earn/refer_and_earn_screen.dart';
 import 'package:driver/ui/settings_screen/setting_screen.dart';
-import 'package:driver/ui/subscription_plan_screen/subscription_history.dart';
-import 'package:driver/ui/subscription_plan_screen/subscription_list_screen.dart';
 import 'package:driver/ui/vehicle_information/vehicle_information_screen.dart';
 import 'package:driver/utils/Preferences.dart';
 import 'package:driver/ui/wallet/wallet_screen.dart';
@@ -61,25 +59,7 @@ class DashBoardController extends GetxController {
             return Constant.isVerifyDocument == true
                 ? const VehicleInformationScreen()
                 : const SettingScreen();
-          case 10:
-            return Constant.isVerifyDocument == true
-                ? const SettingScreen()
-                : const SubscriptionListScreen();
           case 11:
-            return Constant.isVerifyDocument == true
-                ? const SubscriptionListScreen()
-                : const SubscriptionHistory();
-          case 12:
-            return Constant.isVerifyDocument == true
-                ? const SubscriptionHistory()
-                : HelpSupportScreen(
-                    userId: driverUser.value.id,
-                    userName: driverUser.value.fullName,
-                    userProfileImage: driverUser.value.profilePic,
-                    token: driverUser.value.fcmToken,
-                    isShowAppbar: false,
-                  );
-          case 13:
             return HelpSupportScreen(
               userId: driverUser.value.id,
               userName: driverUser.value.fullName,
@@ -124,11 +104,6 @@ class DashBoardController extends GetxController {
           case 10:
             return Constant.isVerifyDocument == true
                 ? const SettingScreen()
-                : const SubscriptionHistory();
-
-          case 11:
-            return Constant.isVerifyDocument == true
-                ? const SubscriptionHistory()
                 : HelpSupportScreen(
                     userId: driverUser.value.id,
                     userName: driverUser.value.fullName,
@@ -136,7 +111,8 @@ class DashBoardController extends GetxController {
                     token: driverUser.value.fcmToken,
                     isShowAppbar: false,
                   );
-          case 12:
+
+          case 11:
             return HelpSupportScreen(
               userId: driverUser.value.id,
               userName: driverUser.value.fullName,
@@ -181,7 +157,7 @@ class DashBoardController extends GetxController {
   Future<void> onSelectItem(int index) async {
     if (driverUser.value.ownerId == null) {
       if (Constant.isSubscriptionModelApplied == true) {
-        if (Constant.isVerifyDocument == true ? index == 14 : index == 13) {
+        if (Constant.isVerifyDocument == true ? index == 12 : index == 11) {
           await FirebaseAuth.instance.signOut();
           await Preferences.clearKeyData('userId');
           Get.offAll(const LoginScreen());
@@ -189,7 +165,7 @@ class DashBoardController extends GetxController {
           selectedDrawerIndex.value = index;
         }
       } else {
-        if (Constant.isVerifyDocument == true ? index == 13 : index == 12) {
+        if (Constant.isVerifyDocument == true ? index == 11 : index == 10) {
           await FirebaseAuth.instance.signOut();
           await Preferences.clearKeyData('userId');
           Get.offAll(const LoginScreen());
@@ -228,9 +204,9 @@ class DashBoardController extends GetxController {
             DrawerItem('Online Registration', "assets/icons/ic_document.svg"),
           DrawerItem('Vehicle Information', "assets/icons/ic_city.svg"),
           DrawerItem('Settings', "assets/icons/ic_settings.svg"),
-          DrawerItem('Subscription', "assets/icons/ic_subscription.svg"),
-          DrawerItem('Subscription History',
-              "assets/icons/ic_subscription_history.svg"),
+          // DrawerItem('Subscription', "assets/icons/ic_subscription.svg"),
+          // DrawerItem('Subscription History',
+          //     "assets/icons/ic_subscription_history.svg"),
           DrawerItem('Help & Support', "assets/icons/ic_help_support.svg"),
           DrawerItem('Log out', "assets/icons/ic_logout.svg"),
         ];
@@ -250,8 +226,8 @@ class DashBoardController extends GetxController {
             DrawerItem('Online Registration', "assets/icons/ic_document.svg"),
           DrawerItem('Vehicle Information', "assets/icons/ic_city.svg"),
           DrawerItem('Settings', "assets/icons/ic_settings.svg"),
-          DrawerItem('Subscription History',
-              "assets/icons/ic_subscription_history.svg"),
+          // DrawerItem('Subscription History',
+          //     "assets/icons/ic_subscription_history.svg"),
           DrawerItem('Help & Support', "assets/icons/ic_help_support.svg"),
           DrawerItem('Log out', "assets/icons/ic_logout.svg"),
         ];
