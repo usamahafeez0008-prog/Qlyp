@@ -234,7 +234,13 @@ class DashBoardScreen extends StatelessWidget {
                 currentIndex: controller.getSelectedBottomNavIndex() == -1
                     ? 0
                     : controller.getSelectedBottomNavIndex(),
-                onTap: (index) => controller.onBottomNavTapped(index),
+                onTap: (index) {
+                  if (index == 0) {
+                    controller.onBottomNavTapped(index);
+                  } else {
+                    // controller.onBottomNavTapped(index);
+                  }
+                },
                 type: BottomNavigationBarType.fixed,
                 backgroundColor: Colors.white,
                 selectedItemColor: AppColors.qlypPrimaryFreshGreen,
@@ -283,7 +289,7 @@ class DashBoardScreen extends StatelessWidget {
                               Builder(builder: (context) {
                                 return GestureDetector(
                                   onTap: () =>
-                                      Scaffold.of(context).openDrawer(),
+                                      () {}, //Scaffold.of(context).openDrawer(),
                                   child: Stack(
                                     children: [
                                       Container(

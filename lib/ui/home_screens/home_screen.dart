@@ -77,7 +77,7 @@ class HomeScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(2),
                           child: const LinearProgressIndicator(
                             value: 0.7,
-                            minHeight: 6,
+                            minHeight: 4,
                             backgroundColor: Color(0xFFE2E5EA),
                             valueColor: AlwaysStoppedAnimation<Color>(
                                 AppColors.qlypPrimaryFreshGreen),
@@ -118,14 +118,14 @@ class HomeScreen extends StatelessWidget {
                               AppColors.qlypPrimaryFreshGreen.withOpacity(0.12),
                           borderRadius: BorderRadius.circular(6),
                         ),
-                        child: Text(
-                          "3 NEW".tr,
-                          style: GoogleFonts.outfit(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.qlypPrimaryFreshGreen,
-                          ),
-                        ),
+                        // child: Text(
+                        //   "3 NEW".tr,
+                        //   style: GoogleFonts.outfit(
+                        //     fontSize: 10,
+                        //     fontWeight: FontWeight.w800,
+                        //     color: AppColors.qlypPrimaryFreshGreen,
+                        //   ),
+                        // ),
                       ),
                     ],
                   ),
@@ -168,7 +168,7 @@ class HomeScreen extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        color: isDark ?  Colors.black  : Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -253,10 +253,10 @@ class HomeScreen extends StatelessWidget {
     final bool isDark = Provider.of<DarkThemeProvider>(context).getThem();
     return Expanded(
       child: Container(
-        height: 120,
+        height: 110,
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+          color: isDark ? Colors.black : Colors.white,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(

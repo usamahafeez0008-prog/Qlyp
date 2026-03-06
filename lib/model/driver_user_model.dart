@@ -90,7 +90,13 @@ class DriverUserModel {
     position =
         json['position'] != null ? Positions.fromJson(json['position']) : null;
     createdAt = json['createdAt'];
-    zoneIds = json['zoneIds'];
+    if (json['zoneIds'] != null) {
+      if (json['zoneIds'] is String) {
+        zoneIds = [json['zoneIds']];
+      } else if (json['zoneIds'] is List) {
+        zoneIds = json['zoneIds'];
+      }
+    }
     subscriptionTotalOrders = json['subscriptionTotalOrders'];
     subscriptionPlanId = json['subscriptionPlanId'];
     subscriptionExpiryDate = json['subscriptionExpiryDate'];
